@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Player Spotlight — Computeverse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+ body{
+   margin:0;background:#05070f;font-family:Inter, sans-serif;color:#fff;
+   display:flex;justify-content:center;padding:20px;
+ }
+ .card{
+   width:1080px;aspect-ratio:1080/1350;
+   background:linear-gradient(160deg,#0c1226,#060910);
+   border-radius:24px;padding:40px;box-sizing:border-box;position:relative;
+   overflow:hidden;
+ }
+ .glow{
+   position:absolute;top:-200px;right:-200px;width:500px;height:500px;
+   background:radial-gradient(circle,#00eaff55,transparent 70%);
+   filter:blur(90px);z-index:0;
+ }
+ h1{
+   position:relative;z-index:2;font-size:56px;font-weight:900;text-align:center;
+   text-transform:uppercase;letter-spacing:3px;margin:0 0 20px 0;
+ }
+ .profile{
+   width:360px;height:360px;border-radius:24px;object-fit:cover;
+   border:5px solid #00eaff;display:block;margin:0 auto;position:relative;z-index:2;
+ }
+ .name{
+   margin-top:22px;font-size:48px;font-weight:800;text-align:center;z-index:2;position:relative;
+ }
+ .role{
+   text-align:center;font-size:26px;color:#b9c4d8;margin-top:6px;z-index:2;position:relative;
+ }
+ .stats{
+   margin-top:34px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;z-index:2;position:relative;
+ }
+ .box{
+   background:rgba(255,255,255,0.07);padding:22px;border-radius:16px;text-align:center;
+ }
+ .value{font-size:40px;font-weight:900;}
+ .label{font-size:22px;color:#b9c4d8;margin-top:6px;}
+ .download{
+   margin-top:40px;display:block;width:260px;text-align:center;padding:16px;
+   background:#00eaff;border:none;border-radius:14px;font-size:24px;font-weight:700;
+   cursor:pointer;color:#000;margin-left:auto;margin-right:auto;
+ }
+</style>
+</head>
+<body>
+<div class="card" id="capture">
+  <div class="glow"></div>
+
+  <h1>Player Spotlight</h1>
+
+  <img src="" id="profileImg" class="profile" />
+
+  <div class="name" id="playerName">Player Name</div>
+  <div class="role" id="playerRole">Batsman / Bowler</div>
+
+  <div class="stats">
+    <div class="box"><div class="value" id="stat1">54</div><div class="label">Matches</div></div>
+    <div class="box"><div class="value" id="stat2">1789</div><div class="label">Runs</div></div>
+    <div class="box"><div class="value" id="stat3">45.2</div><div class="label">Average</div></div>
+  </div>
+
+  <button class="download" onclick="downloadImage()">Download Graphic</button>
+</div>
+
+<script>
+function downloadImage(){
+  html2canvas(document.querySelector('#capture')).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'player-spotlight.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Auction Base Price — Computeverse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+ body{margin:0;background:#04060d;font-family:Inter, sans-serif;color:#fff;display:flex;justify-content:center;padding:20px;}
+ .card{
+   width:1080px;aspect-ratio:1080/1350;background:linear-gradient(140deg,#0a0f24,#080b16);
+   border-radius:22px;padding:40px;box-sizing:border-box;position:relative;
+ }
+ h1{font-size:50px;margin:0;text-align:center;text-transform:uppercase;font-weight:800;letter-spacing:2px;}
+ .player-pic{width:320px;height:320px;object-fit:cover;border-radius:18px;border:4px solid #ffb200;display:block;margin:26px auto 10px auto;}
+ .name{font-size:42px;font-weight:700;text-align:center;margin-top:10px;}
+ .price-box{
+   background:rgba(255,255,255,0.07);padding:20px;border-radius:16px;
+   width:60%;margin:26px auto 0 auto;text-align:center;
+ }
+ .label{font-size:26px;opacity:0.7;}
+ .amount{font-size:52px;font-weight:800;color:#ffb200;margin-top:6px;}
+ .team-box{margin-top:30px;text-align:center;font-size:32px;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="card" id="exportArea">
+  <h1>Auction Base Price</h1>
+  <img id="playerImg" class="player-pic" src="" alt="Player" />
+  <div class="name" id="playerName">Player Name</div>
+  <div class="price-box">
+    <div class="label">Base Price</div>
+    <div class="amount" id="basePrice">₹ 0 Lakh</div>
+  </div>
+  <div class="team-box" id="teamName">Team Name</div>
+</div>
+
+<script>
+function exportCard(){
+  html2canvas(document.querySelector('#exportArea')).then(canvas=>{
+    const link=document.createElement('a');
+    link.download='auction-base-price.png';
+    link.href=canvas.toDataURL();
+    link.click();
+  });
+}
+</script>
+</body>
+</html>

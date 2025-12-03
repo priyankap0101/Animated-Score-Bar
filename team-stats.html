@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Team Stats — Computeverse</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  body{
+    margin:0;
+    min-height:100vh;
+    background:#0a0f1c;
+    font-family:Inter, sans-serif;
+    color:#fff;
+    padding:20px;
+    box-sizing:border-box;
+  }
+  .container{
+    display:grid;
+    grid-template-columns:350px 1fr;
+    gap:20px;
+    max-width:1300px;
+    margin:auto;
+  }
+  .panel{
+    background:#111827;
+    padding:18px;
+    border-radius:12px;
+  }
+  label{font-size:14px;opacity:0.9;}
+  input, textarea, select{
+    width:100%;
+    padding:10px;
+    margin:6px 0 14px;
+    border-radius:8px;
+    border:none;
+    background:#1f2937;
+    color:#fff;
+  }
+  .card{
+    width:100%;
+    background:#1a2333;
+    border-radius:14px;
+    padding:20px;
+  }
+  .team-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+  }
+  .team-logo{
+    width:80px;
+    height:80px;
+    border-radius:10px;
+    object-fit:cover;
+    background:#000;
+  }
+  .stats-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:14px;
+  }
+  .stat-box{
+    background:#111a28;
+    padding:14px;
+    border-radius:10px;
+    text-align:center;
+  }
+  .btn{
+    background:#2563eb;
+    padding:10px 14px;
+    border:none;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="panel">
+    <h2>Team Stats Input</h2>
+
+    <label>Team Name</label>
+    <input id="teamName" placeholder="Mumbai Indians" />
+
+    <label>Upload Team Logo</label>
+    <input type="file" id="teamLogo" accept="image/*" />
+
+    <label>Stats (one per line — e.g. Matches: 14)</label>
+    <textarea id="stats" rows="8" placeholder="Matches: 14&#10;Wins: 10&#10;Losses: 4&#10;Points: 20"></textarea>
+
+    <button class="btn" onclick="updateCard()">Update Card</button>
+    <button class="btn" onclick="downloadCard()">Download</button>
+  </div>
+
+  <div id="capture" class="card">
+    <div class="team-header">
+      <h1 id="c_teamName">Team Name</h1>
+      <img id="c_teamLogo" class="team-logo" />
+    </div>
+
+    <div id="statsList" class="stats-grid"></div>
+  </div>
+</div>
+
+<script>
+function updateCard(){
+  document.getElementById("c_teamName").innerText = document.getElementById("teamName").value;
+
+  let file = document.getElementById("teamLogo").files[0];
+  if(file){
+    let reader = new FileReader();
+    reader.onload = e => document.getElementById("c_teamLogo").src = e.target.result;
+    reader.readAsDataURL(file);
+  }
+
+  let stats = document.getElementById("stats").value.split("\n");
+  let html = "";
+  stats.forEach(s => {
+    if(s.trim() !== "") html += `<div class='stat-box'>${s}</div>`;
+  });
+  document.getElementById("statsList").innerHTML = html;
+}
+
+function downloadCard(){
+  html2canvas(document.getElementById("capture")).then(canvas => {
+    let link = document.createElement("a");
+    link.download = "team-stats.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+</script>
+
+</body>
+</html>

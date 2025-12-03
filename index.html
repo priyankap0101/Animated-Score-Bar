@@ -1,354 +1,65 @@
+<!-- Computeverse Power-Pack: Index + Shared Assets -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Animated Score Bar</title>
+<title>Computeverse — Template Power Pack (Index)</title>
 <style>
-  :root{
-    --bg: #071025;
-    --card: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    --accent: #00d4ff;
-    --accent2: #ff5c7a;
-    --muted: rgba(255,255,255,0.55);
-    --glass: rgba(255,255,255,0.04);
-    --shadow: 0 6px 30px rgba(2,6,23,0.7);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-
-  html,body{
-    height:100%;
-    margin:0;
-    background: linear-gradient(180deg, #020417 0%, #071025 100%);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-    color:#fff;
-  }
-
-  /* Score bar container */
-  .scorebar {
-    width: min(980px, 96%);
-    max-width: 1100px;
-    border-radius: 12px;
-    background: var(--card);
-    backdrop-filter: blur(6px) saturate(1.1);
-    box-shadow: var(--shadow);
-    padding: 12px 16px;
-    display:flex;
-    gap:14px;
-    align-items:center;
-  }
-
-  /* Team block */
-  .team {
-    display:flex;
-    gap:12px;
-    align-items:center;
-    flex: 1 1 0;
-    min-width: 0;
-  }
-  .team-left, .team-right { justify-content:flex-start; }
-  .team-right { justify-content:flex-end; flex-direction:row-reverse; }
-
-  .logo {
-    width:64px;
-    height:64px;
-    border-radius:10px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:700;
-    font-size:18px;
-    color:var(--muted);
-    position:relative;
-    overflow:hidden;
-    box-shadow: 0 6px 18px rgba(2,8,20,0.6), inset 0 -6px 12px rgba(255,255,255,0.01);
-  }
-
-  .logo svg { width:42px; height:42px; opacity:0.95; transform:translateY(0); }
-
-  .team-info {
-    display:flex;
-    flex-direction:column;
-    min-width: 0;
-  }
-
-  .team-name {
-    font-weight:700;
-    letter-spacing:0.4px;
-    font-size:16px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .score {
-    font-weight:900;
-    font-size:26px;
-    display:flex;
-    gap:8px;
-    align-items:baseline;
-  }
-  .score .runs { color:var(--accent); }
-  .score .wickets { color:var(--muted); font-size:18px; font-weight:700; opacity:0.95; }
-
-  .meta {
-    color:var(--muted);
-    font-size:12px;
-    margin-top:4px;
-  }
-
-  /* Center panel */
-  .center {
-    width:300px;
-    min-width:200px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    padding:6px 10px;
-    border-radius:10px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  }
-
-  .overs {
-    font-weight:800;
-    font-size:18px;
-    letter-spacing:0.6px;
-  }
-  .status {
-    font-size:13px;
-    color:var(--muted);
-  }
-
-  /* Pulse and small animations */
-  .pulse {
-    position:absolute;
-    inset:0;
-    border-radius:8px;
-    pointer-events:none;
-    opacity:0;
-    transform:scale(0.95);
-  }
-
-  .score-change {
-    animation:scorePulse 900ms cubic-bezier(.2,.9,.3,1);
-  }
-
-  @keyframes scorePulse {
-    0% { transform:scale(0.9); opacity:0; box-shadow:0 0 0 0 rgba(0,212,255,0.25); }
-    30% { transform:scale(1.02); opacity:1; box-shadow:0 0 18px 6px rgba(0,212,255,0.12); }
-    100% { transform:scale(1); opacity:0; box-shadow:0 0 0 0 rgba(0,212,255,0); }
-  }
-
-  /* small run animation bubble */
-  .run-bubble {
-    position: absolute;
-    font-weight:800;
-    font-size:14px;
-    padding:6px 8px;
-    border-radius:999px;
-    background:linear-gradient(90deg,var(--accent),#2ae6b6);
-    color:#021220;
-    transform: translateY(-20px) scale(.6);
-    opacity:0;
-    pointer-events:none;
-    will-change:transform,opacity;
-  }
-  .run-bubble.show {
-    animation: bubbleUp 900ms cubic-bezier(.2,.9,.3,1) forwards;
-  }
-  @keyframes bubbleUp {
-    0% { transform:translateY(0) scale(.6); opacity:0; }
-    20% { transform:translateY(-18px) scale(1.05); opacity:1; }
-    100% { transform:translateY(-48px) scale(1); opacity:0; }
-  }
-
-  /* small responsive tweaks */
-  @media (max-width:720px){
-    .logo { width:52px; height:52px; }
-    .scorebar { gap:10px; padding:10px; }
-    .center { width:210px; }
-    .score { font-size:20px; }
-  }
+  :root{ --bg:#071026; --panel:#0d1724; --muted:#b8c7d6; --accent:#00d4ff; --accent2:#ff5c7a; }
+  html,body{height:100%;margin:0;font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:linear-gradient(180deg,#081029 0%, #041425 100%);color:#fff}
+  .wrap{max-width:1100px;margin:24px auto;padding:20px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+  h1{margin:0 0 6px 0;font-size:22px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+  a.tlink{display:block;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,0.03)}
+  .note{color:var(--muted);font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Computeverse — Template Power Pack (20 Templates)</h1>
+      <div class="note">You chose a mixed pack: 10 Cricket + 10 Universal templates, with <strong>all</strong> visual styles enabled (glass, neon, gradients, minimal, photo-heavy, poster, square, vertical, dark, stats-focused). Each template is a separate HTML file you can open, edit, and export as PNG (no watermark).</div>
 
-<div class="scorebar" role="region" aria-label="Live Score Bar">
-  <!-- Left Team -->
-  <div class="team team-left" id="teamA">
-    <div class="logo" aria-hidden="true" id="logoA">
-      <!-- SVG placeholder -->
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="8" r="3"></circle>
-        <path d="M5 21c3-2 6-3 7-3s4 1 7 3"></path>
-      </svg>
-    </div>
-    <div class="team-info">
-      <div class="team-name" id="nameA">Team Alpha</div>
-      <div class="score" id="scoreA" aria-live="polite">
-        <div class="runs" id="runsA">45</div>
-        <div class="wickets">/ <span id="wktA">2</span></div>
+      <div style="height:12px"></div>
+      <div style="font-weight:800;margin-bottom:8px">Included templates (first 6 files generated here):</div>
+      <div class="grid">
+        <a class="tlink" href="most-sixes.html">1. Most Sixes (Cricket)</a>
+        <a class="tlink" href="probable-xi.html">2. Probable XI (Cricket)</a>
+        <a class="tlink" href="bowling-performance.html">3. Bowling Performance (Cricket)</a>
+        <a class="tlink" href="auction-base-price.html">4. Auction Base Price (Cricket)</a>
+        <a class="tlink" href="potm-awards.html">5. POTM Awards (Cricket)</a>
+        <a class="tlink" href="simple-stat-card.html">6. Simple Stat Card (Cricket)</a>
       </div>
-      <div class="meta" id="metaA">Overs: <span id="oversA">6.3</span> · RR: <span id="rrA">7.14</span></div>
-    </div>
-  </div>
 
-  <!-- Center -->
-  <div class="center" id="centerPanel">
-    <div class="overs" id="centerOvers">Innings 1 · 6.3 overs</div>
-    <div class="status" id="statusText">Powerplay · Momentum: Team Alpha</div>
-    <div style="position:relative;height:0;width:0">
-      <div class="run-bubble" id="runBubble">+4</div>
-    </div>
-  </div>
-
-  <!-- Right Team -->
-  <div class="team team-right" id="teamB">
-    <div class="logo" aria-hidden="true" id="logoB">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="14" rx="2"></rect>
-        <path d="M7 21v-4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"></path>
-      </svg>
-    </div>
-    <div class="team-info" style="text-align:right">
-      <div class="team-name" id="nameB">Team Beta</div>
-      <div class="score" id="scoreB" aria-live="polite">
-        <div class="runs" id="runsB">0</div>
-        <div class="wickets">/ <span id="wktB">0</span></div>
+      <div style="height:12px"></div>
+      <div style="font-weight:800;margin-bottom:8px">Universal templates (will be generated next):</div>
+      <div class="grid" style="grid-template-columns:repeat(4,1fr)">
+        <a class="tlink" href="quote-card.html">7. Quote / Statement</a>
+        <a class="tlink" href="versus-card.html">8. Versus Comparison</a>
+        <a class="tlink" href="match-preview.html">9. Match Preview / Event</a>
+        <a class="tlink" href="infographic-number.html">10. Infographic / Number Focus</a>
+        <a class="tlink" href="photo-spotlight.html">11. Photo Spotlight</a>
+        <a class="tlink" href="team-banner.html">12. Team Banner</a>
+        <a class="tlink" href="countdown-poster.html">13. Countdown Poster</a>
+        <a class="tlink" href="social-thumbnail.html">14. Social Thumbnail (YT)</a>
+        <a class="tlink" href="stat-comparison.html">15. Stat Comparison</a>
+        <a class="tlink" href="vertical-poster.html">16. Vertical Poster (Reel)</a>
       </div>
-      <div class="meta" id="metaB">Overs: <span id="oversB">0.0</span> · RR: <span id="rrB">0.00</span></div>
+
+      <div style="height:12px"></div>
+      <div class="note">How to use: download this folder and open <code>index.html</code> locally. Each template file is self-contained and includes an editor (fields + image upload + color/theme controls) and a <strong>Download PNG</strong> button that exports a high-resolution image using <code>html2canvas</code>. Files are offline-capable.</div>
+
+      <div style="height:12px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="tlink" href="https://example.com/readme" target="_blank">Docs / Readme (placeholder)</a>
+        <a class="tlink" href="most-sixes.html">Open Template 1</a>
+      </div>
+
     </div>
   </div>
-</div>
-
-<script>
-/*
-  Animated Score Bar
-  - Call updateScore(data) to update UI
-  - data object example:
-    {
-      teamA: { name:'India', runs:245, wickets:3, overs:'38.2', rr:6.47 },
-      teamB: { name:'South Africa', runs:234, wickets:5, overs:'38.0', rr:6.15 },
-      status: 'Lunch Score · India lead by 11'
-    }
-  - runEvent({team:'A', runs:4}) will show the little run bubble animation.
-*/
-
-(function(){
-  // element refs
-  const nameA = document.getElementById('nameA'), nameB = document.getElementById('nameB');
-  const runsA = document.getElementById('runsA'), runsB = document.getElementById('runsB');
-  const wktA = document.getElementById('wktA'), wktB = document.getElementById('wktB');
-  const oversA = document.getElementById('oversA'), oversB = document.getElementById('oversB');
-  const rrA = document.getElementById('rrA'), rrB = document.getElementById('rrB');
-  const centerOvers = document.getElementById('centerOvers'), statusText = document.getElementById('statusText');
-  const runBubble = document.getElementById('runBubble');
-  const scoreA = document.getElementById('scoreA'), scoreB = document.getElementById('scoreB');
-
-  // helper to animate numeric change
-  function animateNumber(el, start, end, duration = 600) {
-    const range = end - start;
-    if(range === 0) { el.textContent = end; return; }
-    const startTime = performance.now();
-    function tick(now) {
-      const t = Math.min(1, (now - startTime) / duration);
-      const eased = t < 0.5 ? 2*t*t : -1 + (4 - 2*t)*t; // ease in-out-ish
-      const val = Math.round(start + range * eased);
-      el.textContent = val;
-      if(t < 1) requestAnimationFrame(tick);
-      else el.textContent = end;
-    }
-    requestAnimationFrame(tick);
-  }
-
-  // main update function
-  window.updateScore = function(data = {}) {
-    // Team names
-    if(data.teamA?.name) nameA.textContent = data.teamA.name;
-    if(data.teamB?.name) nameB.textContent = data.teamB.name;
-
-    // Runs & wickets (animate runs)
-    if(typeof data.teamA?.runs === 'number') {
-      const prev = parseInt(runsA.textContent) || 0;
-      animateNumber(runsA, prev, data.teamA.runs);
-      // highlight pulse on change
-      scoreA.classList.add('score-change');
-      setTimeout(()=> scoreA.classList.remove('score-change'), 900);
-    }
-    if(typeof data.teamB?.runs === 'number') {
-      const prev = parseInt(runsB.textContent) || 0;
-      animateNumber(runsB, prev, data.teamB.runs);
-      scoreB.classList.add('score-change');
-      setTimeout(()=> scoreB.classList.remove('score-change'), 900);
-    }
-
-    if(typeof data.teamA?.wickets === 'number') {
-      wktA.textContent = data.teamA.wickets;
-    }
-    if(typeof data.teamB?.wickets === 'number') {
-      wktB.textContent = data.teamB.wickets;
-    }
-
-    if(data.teamA?.overs) oversA.textContent = data.teamA.overs;
-    if(data.teamB?.overs) oversB.textContent = data.teamB.overs;
-    if(typeof data.teamA?.rr === 'number') rrA.textContent = data.teamA.rr.toFixed(2);
-    if(typeof data.teamB?.rr === 'number') rrB.textContent = data.teamB.rr.toFixed(2);
-
-    // center text
-    if(data.centerText) centerOvers.textContent = data.centerText;
-    if(data.status) statusText.textContent = data.status;
-
-    // optional run bubble
-    if(data.runEvent) {
-      runEvent(data.runEvent);
-    }
-  };
-
-  // show run bubble animation near center
-  function runEvent(e) {
-    if(!e || !e.runs) return;
-    runBubble.textContent = (e.runs > 0 ? '+' : '') + e.runs;
-    // position left/right based on team
-    const rect = document.querySelector('.center').getBoundingClientRect();
-    runBubble.style.left = (rect.width/2 - 24) + 'px';
-    runBubble.classList.remove('show');
-    // reflow then add
-    void runBubble.offsetWidth;
-    runBubble.classList.add('show');
-  }
-
-  // Demo simulator (remove in production)
-  const demo = [
-    { teamA:{name:'Nebula FC', runs:45, wickets:2, overs:'6.3', rr:7.14}, teamB:{name:'Orbit XI', runs:0, wickets:0, overs:'0.0', rr:0}, centerText:'Innings 1 · 6.3 overs', status:'Powerplay · Momentum: Nebula' },
-    { teamA:{runs:49, wickets:2}, runEvent:{team:'A', runs:4}, centerText:'Innings 1 · 6.5 overs', status:'Boundary! Crowd Roars' },
-    { teamA:{runs:55, wickets:2}, runEvent:{team:'A', runs:6}, centerText:'Innings 1 · 7.1 overs', status:'SIX! Big shot' },
-    { teamA:{runs:60, wickets:3}, runEvent:{team:'A', runs:1}, centerText:'Innings 1 · 8.0 overs', status:'Wicket! Top edge' },
-    { teamB:{name:'Orbit XI', runs:120, wickets:4, overs:'18.0', rr:6.67}, centerText:'Innings 2 · 18.0 overs', status:'Chasing: Orbit XI' },
-    { teamB:{runs:124, wickets:4}, runEvent:{team:'B', runs:4}, centerText:'Innings 2 · 18.2 overs', status:'Back-and-forth contest' },
-  ];
-
-  // Run demo sequence
-  let di = 0;
-  function runDemoStep(){
-    if(di >= demo.length) return;
-    updateScore(demo[di]);
-    di++;
-    setTimeout(runDemoStep, 2200 + Math.random()*1600);
-  }
-  // uncomment to auto-run demo when page loads:
-  runDemoStep();
-
-  // Expose small helper to simulate run bubbles
-  window.runEvent = function(team, runs){
-    runEvent({team, runs});
-  };
-
-})();
-</script>
 </body>
 </html>
+
+<!-- Note: Next steps: I will generate each template file (20 total) as separate HTML files. Open the index above to navigate. -->

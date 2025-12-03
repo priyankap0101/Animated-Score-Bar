@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Versus Card</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .vs-card {
+      width: 600px;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+    .team {
+      width: 40%;
+      text-align: center;
+    }
+    .team img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #666;
+    }
+    .team-name {
+      margin-top: 10px;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .vs {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ff4444;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="vs-card">
+
+    <div class="team">
+      <img src="team1.png" alt="Team 1 Logo" />
+      <div class="team-name">Team 1</div>
+    </div>
+
+    <div class="vs">VS</div>
+
+    <div class="team">
+      <img src="team2.png" alt="Team 2 Logo" />
+      <div class="team-name">Team 2</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
