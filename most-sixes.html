@@ -1,119 +1,282 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Most Sixes Template — Computeverse</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Most Sixes — Neon UI Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-  body{
-    margin:0;background:#060b18;font-family:Inter, sans-serif;color:#fff;display:flex;justify-content:center;padding:20px;
-  }
-  .container{
-    width:1080px;aspect-ratio:1080/1350;background:linear-gradient(145deg,#0a122b,#09101f);border-radius:20px;position:relative;padding:40px;box-sizing:border-box;
-  }
-  .title{
-    font-size:48px;font-weight:800;text-transform:uppercase;letter-spacing:2px;text-align:center;margin-bottom:20px;
-  }
-  .player-box{
-    background:rgba(255,255,255,0.05);border-radius:16px;padding:20px;display:flex;align-items:center;gap:20px;margin-bottom:18px;
-  }
-  .player-img{
-    width:120px;height:120px;border-radius:12px;object-fit:cover;border:3px solid #00eaff;
-  }
-  .p-details{
-    flex:1;
-  }
-  .p-name{font-size:32px;font-weight:700;margin:0;}
-  .p-team{font-size:18px;margin-top:4px;color:#b8c7d6;}
-  .p-sixes{font-size:42px;font-weight:800;color:#00eaff;text-align:right;}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 
-  .input-panel{
-    position:fixed;right:20px;top:20px;width:300px;background:#0e1629;padding:20px;border-radius:14px;box-shadow:0 0 20px rgba(0,0,0,0.5);
-  }
-  label{font-size:14px;font-weight:600;margin-top:10px;display:block;}
-  input{width:100%;padding:8px;border-radius:8px;border:none;margin-top:4px;margin-bottom:10px;background:#152039;color:#fff;}
-  button{
-    width:100%;padding:12px;background:#00eaff;border:none;border-radius:10px;font-weight:700;margin-top:12px;cursor:pointer;color:#000;
-  }
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #0a0e20;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1080px;
+  background: linear-gradient(145deg, #0f122c, #0a0f1f);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 0 60px rgba(0, 255, 255, 0.25);
+  transition: all 0.3s;
+}
+
+.title {
+  font-size: 56px;
+  font-weight: 800;
+  text-align: center;
+  color: #00f0ff;
+  text-shadow: 0 0 15px #00f0ff, 0 0 30px #00f0ff;
+  margin-bottom: 40px;
+}
+
+.players-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.player-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+  transition: 0.4s;
+  position: relative;
+}
+
+.player-box:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 0 60px #00f0ff;
+}
+
+.player-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 16px;
+  border: 4px solid #00f0ff;
+  object-fit: cover;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.player-img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 25px #00f0ff;
+}
+
+.p-details {
+  flex: 1;
+}
+
+.p-name {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.p-team {
+  font-size: 16px;
+  color: #b8c7d6;
+  margin-top: 5px;
+}
+
+.p-sixes {
+  font-size: 42px;
+  font-weight: 800;
+  color: #00f0ff;
+  text-align: right;
+  min-width: 80px;
+  text-shadow: 0 0 15px #00f0ff;
+}
+
+/* Input Panel */
+.input-panel {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  width: 350px;
+  background: #0e1629;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.input-panel h3 {
+  text-align: center;
+  color: #00f0ff;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+input[type="text"], input[type="number"], input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 5px;
+  background: #152039;
+  color: #fff;
+  font-size: 14px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+.add-player {
+  background: #00ff90;
+  color: #000;
+}
+.add-player:hover {
+  background: #00cc70;
+}
+
+.update {
+  background: #00f0ff;
+  color: #000;
+}
+.update:hover {
+  background: #00c1e0;
+}
+
+.download {
+  background: #1d1d1d;
+  color: #00f0ff;
+}
+.download:hover {
+  background: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container { padding: 20px; }
+  .title { font-size: 40px; }
+  .player-img { width: 100px; height: 100px; }
+  .p-name { font-size: 24px; }
+  .p-sixes { font-size: 32px; }
+  .input-panel { width: 90%; right: 5%; top: 10px; }
+}
 </style>
 </head>
 <body>
 
 <div class="container" id="capture">
-  <div class="title">Most Sixes</div>
-
-  <div class="player-box">
-    <img id="img1" class="player-img" src="" />
-    <div class="p-details">
-      <h2 id="name1" class="p-name">Player Name</h2>
-      <p id="team1" class="p-team">Team Name</p>
-    </div>
-    <div id="six1" class="p-sixes">0</div>
-  </div>
-
-  <div class="player-box">
-    <img id="img2" class="player-img" src="" />
-    <div class="p-details">
-      <h2 id="name2" class="p-name">Player Name</h2>
-      <p id="team2" class="p-team">Team Name</p>
-    </div>
-    <div id="six2" class="p-sixes">0</div>
-  </div>
-
-  <div class="player-box">
-    <img id="img3" class="player-img" src="" />
-    <div class="p-details">
-      <h2 id="name3" class="p-name">Player Name</h2>
-      <p id="team3" class="p-team">Team Name</p>
-    </div>
-    <div id="six3" class="p-sixes">0</div>
-  </div>
+  <div class="title">MOST SIXES</div>
+  <div class="players-wrapper" id="playersWrapper"></div>
 </div>
 
-<!-- Input Panel -->
 <div class="input-panel">
-  <h3>Update Data</h3>
-
-  <label>Player 1 Name</label><input id="in_name1" />
-  <label>Player 1 Team</label><input id="in_team1" />
-  <label>Player 1 Sixes</label><input id="in_six1" />
-  <label>Player 1 Image</label><input type="file" id="in_img1" accept="image/*" />
-
-  <label>Player 2 Name</label><input id="in_name2" />
-  <label>Player 2 Team</label><input id="in_team2" />
-  <label>Player 2 Sixes</label><input id="in_six2" />
-  <label>Player 2 Image</label><input type="file" id="in_img2" accept="image/*" />
-
-  <label>Player 3 Name</label><input id="in_name3" />
-  <label>Player 3 Team</label><input id="in_team3" />
-  <label>Player 3 Sixes</label><input id="in_six3" />
-  <label>Player 3 Image</label><input type="file" id="in_img3" accept="image/*" />
-
-  <button onclick="updateData()">Apply</button>
-  <button onclick="downloadPNG()">Download PNG</button>
+  <h3>Update Player Data</h3>
+  <div id="inputContainer"></div>
+  <button class="add-player" onclick="addPlayerInput()">➕ Add Player</button>
+  <button class="update" onclick="updateData()">🔄 Update Data</button>
+  <button class="download" onclick="downloadPNG()">📥 Download PNG</button>
 </div>
 
 <script>
-function updateData(){
-  name1.textContent = in_name1.value;
-  team1.textContent = in_team1.value;
-  six1.textContent  = in_six1.value;
+let players = [];
 
-  name2.textContent = in_name2.value;
-  team2.textContent = in_team2.value;
-  six2.textContent  = in_six2.value;
+function addPlayerInput(){
+  const index = players.length+1;
+  players.push({name:'Player Name', team:'Team Name', sixes:0, img:''});
 
-  name3.textContent = in_name3.value;
-  team3.textContent = in_team3.value;
-  six3.textContent  = in_six3.value;
+  // Input fields
+  const div = document.createElement('div');
+  div.id = 'playerInput'+index;
+  div.innerHTML = `
+    <label>Player ${index} Name</label>
+    <input type="text" id="in_name${index}" placeholder="Player Name">
+    <label>Player ${index} Team</label>
+    <input type="text" id="in_team${index}" placeholder="Team Name">
+    <label>Player ${index} Sixes</label>
+    <input type="number" id="in_six${index}" placeholder="0">
+    <label>Player ${index} Image</label>
+    <input type="file" id="in_img${index}" accept="image/*">
+    <hr style="border-color:#152039;margin:10px 0;">
+  `;
+  document.getElementById('inputContainer').appendChild(div);
 
-  loadImage(in_img1, img1);
-  loadImage(in_img2, img2);
-  loadImage(in_img3, img3);
+  // Player box
+  const box = document.createElement('div');
+  box.className = 'player-box';
+  box.id = 'playerBox'+index;
+  box.innerHTML = `
+    <img id="img${index}" class="player-img" src="https://via.placeholder.com/140x140?text=No+Image">
+    <div class="p-details">
+      <h2 id="name${index}" class="p-name">Player Name</h2>
+      <p id="team${index}" class="p-team">Team Name</p>
+    </div>
+    <div id="six${index}" class="p-sixes">0</div>
+  `;
+  document.getElementById('playersWrapper').appendChild(box);
+
+  // Instant image preview
+  document.getElementById('in_img'+index).addEventListener('change', function(){
+    loadImage(this, document.getElementById('img'+index));
+  });
 }
 
-function loadImage(input, target){
+// Update data with animated counter
+function updateData(){
+  players.forEach((p,i)=>{
+    const index = i+1;
+    const name = document.getElementById('in_name'+index).value || 'Player Name';
+    const team = document.getElementById('in_team'+index).value || 'Team Name';
+    const sixes = parseInt(document.getElementById('in_six'+index).value || '0');
+
+    document.getElementById('name'+index).textContent = name;
+    document.getElementById('team'+index).textContent = team;
+    animateCounter(document.getElementById('six'+index), sixes);
+  });
+}
+
+// Animate six counter with easing
+function animateCounter(element, target){
+  let count = parseInt(element.textContent) || 0;
+  const duration = 800;
+  const stepTime = 20;
+  const steps = duration / stepTime;
+  let step = (target - count)/steps;
+  let currentStep = 0;
+  const interval = setInterval(()=>{
+    count += step;
+    currentStep++;
+    if(currentStep >= steps){
+      count = target;
+      clearInterval(interval);
+    }
+    element.textContent = Math.round(count);
+  }, stepTime);
+}
+
+// Load image
+function loadImage(input,target){
   const file = input.files?.[0];
   if(!file) return;
   const reader = new FileReader();
@@ -121,14 +284,18 @@ function loadImage(input, target){
   reader.readAsDataURL(file);
 }
 
+// Download PNG
 function downloadPNG(){
-  html2canvas(document.querySelector('#capture')).then(canvas=>{
+  html2canvas(document.getElementById('capture'), {backgroundColor:null}).then(canvas=>{
     const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
     link.download = 'most-sixes.png';
-    link.href = canvas.toDataURL();
     link.click();
   });
 }
+
+// Start with one player
+addPlayerInput();
 </script>
 
 </body>
