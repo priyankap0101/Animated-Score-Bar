@@ -126,7 +126,7 @@ label {
   font-weight: 600;
 }
 
-input[type="text"], input[type="number"], input[type="file"] {
+input[type="text"], input[type="number"], input[type="file"], select {
   width: 100%;
   padding: 10px;
   border-radius: 8px;
@@ -149,29 +149,14 @@ button {
   transition: 0.3s;
 }
 
-.add-player {
-  background: #00ff90;
-  color: #000;
-}
-.add-player:hover {
-  background: #00cc70;
-}
+.add-player { background: #00ff90; color: #000; }
+.add-player:hover { background: #00cc70; }
 
-.update {
-  background: #00f0ff;
-  color: #000;
-}
-.update:hover {
-  background: #00c1e0;
-}
+.update { background: #00f0ff; color: #000; }
+.update:hover { background: #00c1e0; }
 
-.download {
-  background: #1d1d1d;
-  color: #00f0ff;
-}
-.download:hover {
-  background: #333;
-}
+.download { background: #1d1d1d; color: #00f0ff; }
+.download:hover { background: #333; }
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -194,6 +179,14 @@ button {
 <div class="input-panel">
   <h3>Update Player Data</h3>
   <div id="inputContainer"></div>
+
+  <label>Download Image Size</label>
+  <select id="imgSize">
+    <option value="1">Small (1080px width)</option>
+    <option value="2" selected>Medium (1920px width)</option>
+    <option value="3">Large (3840px width)</option>
+  </select>
+
   <button class="add-player" onclick="addPlayerInput()">➕ Add Player</button>
   <button class="update" onclick="updateData()">🔄 Update Data</button>
   <button class="download" onclick="downloadPNG()">📥 Download PNG</button>
@@ -206,7 +199,6 @@ function addPlayerInput(){
   const index = players.length+1;
   players.push({name:'Player Name', team:'Team Name', sixes:0, img:''});
 
-  // Input fields
   const div = document.createElement('div');
   div.id = 'playerInput'+index;
   div.innerHTML = `
@@ -222,7 +214,6 @@ function addPlayerInput(){
   `;
   document.getElementById('inputContainer').appendChild(div);
 
-  // Player box
   const box = document.createElement('div');
   box.className = 'player-box';
   box.id = 'playerBox'+index;
@@ -236,27 +227,23 @@ function addPlayerInput(){
   `;
   document.getElementById('playersWrapper').appendChild(box);
 
-  // Instant image preview
   document.getElementById('in_img'+index).addEventListener('change', function(){
     loadImage(this, document.getElementById('img'+index));
   });
 }
 
-// Update data with animated counter
 function updateData(){
   players.forEach((p,i)=>{
     const index = i+1;
     const name = document.getElementById('in_name'+index).value || 'Player Name';
     const team = document.getElementById('in_team'+index).value || 'Team Name';
     const sixes = parseInt(document.getElementById('in_six'+index).value || '0');
-
     document.getElementById('name'+index).textContent = name;
     document.getElementById('team'+index).textContent = team;
     animateCounter(document.getElementById('six'+index), sixes);
   });
 }
 
-// Animate six counter with easing
 function animateCounter(element, target){
   let count = parseInt(element.textContent) || 0;
   const duration = 800;
@@ -275,7 +262,6 @@ function animateCounter(element, target){
   }, stepTime);
 }
 
-// Load image
 function loadImage(input,target){
   const file = input.files?.[0];
   if(!file) return;
@@ -284,12 +270,18 @@ function loadImage(input,target){
   reader.readAsDataURL(file);
 }
 
-// Download PNG
+// Download with selectable size
 function downloadPNG(){
-  html2canvas(document.getElementById('capture'), {backgroundColor:null}).then(canvas=>{
+  const size = document.getElementById('imgSize').value;
+  let scale = 1;
+  if(size == "1") scale = 1;       // Small
+  else if(size == "2") scale = 2;  // Medium
+  else if(size == "3") scale = 4;  // Large
+
+  html2canvas(document.getElementById('capture'), {scale:scale, backgroundColor:null}).then(canvas=>{
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
-    link.download = 'most-sixes.png';
+    link.download = `most-sixes-${size}.png`;
     link.click();
   });
 }
