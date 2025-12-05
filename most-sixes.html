@@ -1,294 +1,452 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Most Sixes — Neon UI Pro</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cricket Poster Studio — Pro</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+  :root{
+    --bg:#06101a; --card:#0c1624; --accent:#00eaff; --muted:#9fb0c6; --gold:#f7c948;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;padding:18px;background:linear-gradient(180deg,#030617 0%,#081025 100%);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    color:#fff;display:flex;gap:18px;min-height:100vh;
+  }
 
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: #0a0e20;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
+  /* left: canvas */
+  .canvas-wrap{flex:1;display:flex;justify-content:center;align-items:flex-start;}
+  .capture{
+    width:1080px;height:1350px;border-radius:18px;padding:34px;
+    background:linear-gradient(165deg,#071022 0%,#0b1730 100%);
+    box-shadow:0 30px 80px rgba(0,0,0,0.6);position:relative;overflow:hidden;
+  }
 
-.container {
-  width: 100%;
-  max-width: 1080px;
-  background: linear-gradient(145deg, #0f122c, #0a0f1f);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 0 0 60px rgba(0, 255, 255, 0.25);
-  transition: all 0.3s;
-}
+  /* headline */
+  .headline{
+    text-align:center;font-family:'Bebas Neue',sans-serif;
+    font-size:64px;color:var(--accent);letter-spacing:2px;margin-bottom:18px;
+    text-shadow:0 6px 28px rgba(0,234,255,0.08),0 0 18px rgba(0,234,255,0.12);
+  }
 
-.title {
-  font-size: 56px;
-  font-weight: 800;
-  text-align: center;
-  color: #00f0ff;
-  text-shadow: 0 0 15px #00f0ff, 0 0 30px #00f0ff;
-  margin-bottom: 40px;
-}
+  /* backgrounds (templates) */
+  .bg-stadium{ background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 10%),
+    linear-gradient(150deg,#071026 0%, #07112a 100%);}
+  .bg-darkneon{ background: linear-gradient(135deg,#020616,#07142a); }
+  .bg-tricolor{ background: linear-gradient(180deg,#ff9933 0%, #ffffff 50%, #138808 100%); color:#071022; }
+  .bg-fire{ background: linear-gradient(135deg,#2b0600,#6b0f00); }
+  .bg-blur{ background: linear-gradient(135deg,#0e2442,#111530); filter: none; }
+  .bg-all{ background: linear-gradient(135deg,#061626,#2b0a1a); }
 
-.players-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
+  /* layout containers */
+  .layout-single{ display:flex; gap:22px; align-items:center; height:calc(100% - 120px); }
+  .single-left{ width:55%; height:100%; border-radius:12px; overflow:hidden; position:relative; }
+  .single-left img{ width:100%; height:100%; object-fit:cover; display:block; filter:contrast(1.02); }
+  .single-right{ flex:1; padding:20px; display:flex;flex-direction:column; justify-content:center; gap:12px; }
+  .name-large{ font-family:'Bebas Neue'; font-size:48px; color:#fff; text-shadow:0 4px 20px rgba(0,0,0,0.5); }
+  .team-small{ color:var(--muted); font-weight:600; }
+  .stat-big{ font-family:'Bebas Neue'; font-size:120px; color:var(--gold); line-height:0.85; text-shadow: 0 8px 40px rgba(247,201,72,0.08); }
 
-.player-box {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
-  transition: 0.4s;
-  position: relative;
-}
+  .layout-list{ display:flex;flex-direction:column; gap:14px; max-height:calc(100% - 120px); overflow:auto; }
+  .player-card{ display:flex; align-items:center; gap:16px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
+  .player-thumb{ width:140px; height:140px; border-radius:10px; object-fit:cover; border:4px solid rgba(255,255,255,0.03); }
 
-.player-box:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 0 60px #00f0ff;
-}
+  .stats-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:8px; }
+  .stat-pill{ padding:8px 10px; background:rgba(0,0,0,0.35); border-radius:8px; font-weight:700; font-size:14px; text-align:center; }
 
-.player-img {
-  width: 140px;
-  height: 140px;
-  border-radius: 16px;
-  border: 4px solid #00f0ff;
-  object-fit: cover;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
+  .brand{ position:absolute; left:28px; bottom:20px; color:rgba(255,255,255,0.12); font-weight:700; }
 
-.player-img:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 25px #00f0ff;
-}
+  /* side panel (controls) */
+  .panel{ width:400px; background:linear-gradient(180deg,#071427,#071424); border-radius:12px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,0.6); overflow:auto; max-height:92vh;}
+  .panel h3{ margin:6px 0 14px 0; color:var(--accent); font-family:'Bebas Neue'; font-size:20px; }
+  label{ display:block; color:var(--muted); margin-top:10px; font-weight:600; font-size:13px; }
+  input[type="text"], input[type="number"], select, textarea{
+    width:100%; padding:10px; border-radius:8px; border:none; background:#081a2b; color:#fff; margin-top:8px;
+  }
+  .row{ display:flex; gap:8px; margin-top:10px; }
+  button{ cursor:pointer; border:none; border-radius:8px; padding:10px 12px; font-weight:700; }
+  .btn-accent{ background:var(--accent); color:#04202a; }
+  .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
+  .small{ font-size:13px; padding:8px 10px; }
 
-.p-details {
-  flex: 1;
-}
+  .players-ctrl{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
 
-.p-name {
-  font-size: 32px;
-  font-weight: 700;
-  margin: 0;
-}
+  .player-ctrl{ display:flex; gap:10px; align-items:flex-start; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; }
+  .player-ctrl img{ width:68px; height:68px; object-fit:cover; border-radius:8px; }
+  .player-ctrl .meta{ flex:1; }
+  .player-ctrl input[type="file"]{ display:block; margin-top:8px; color:#fff; }
 
-.p-team {
-  font-size: 16px;
-  color: #b8c7d6;
-  margin-top: 5px;
-}
+  .drop-hint{ border:2px dashed rgba(255,255,255,0.03); padding:10px; border-radius:8px; text-align:center; color:var(--muted); margin-top:12px; }
 
-.p-sixes {
-  font-size: 42px;
-  font-weight: 800;
-  color: #00f0ff;
-  text-align: right;
-  min-width: 80px;
-  text-shadow: 0 0 15px #00f0ff;
-}
+  .flex-between{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
 
-/* Input Panel */
-.input-panel {
-  position: fixed;
-  right: 20px;
-  top: 20px;
-  width: 350px;
-  background: #0e1629;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.input-panel h3 {
-  text-align: center;
-  color: #00f0ff;
-  margin-bottom: 15px;
-  font-weight: 700;
-}
-
-label {
-  display: block;
-  margin-top: 10px;
-  font-weight: 600;
-}
-
-input[type="text"], input[type="number"], input[type="file"], select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  margin-top: 5px;
-  background: #152039;
-  color: #fff;
-  font-size: 14px;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.3s;
-}
-
-.add-player { background: #00ff90; color: #000; }
-.add-player:hover { background: #00cc70; }
-
-.update { background: #00f0ff; color: #000; }
-.update:hover { background: #00c1e0; }
-
-.download { background: #1d1d1d; color: #00f0ff; }
-.download:hover { background: #333; }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .container { padding: 20px; }
-  .title { font-size: 40px; }
-  .player-img { width: 100px; height: 100px; }
-  .p-name { font-size: 24px; }
-  .p-sixes { font-size: 32px; }
-  .input-panel { width: 90%; right: 5%; top: 10px; }
-}
+  /* responsive smaller */
+  @media(max-width:1200){
+    .panel{ width:360px; }
+    .capture{ width:900px; height:1200px; }
+  }
 </style>
 </head>
 <body>
 
-<div class="container" id="capture">
-  <div class="title">MOST SIXES</div>
-  <div class="players-wrapper" id="playersWrapper"></div>
+<div class="canvas-wrap">
+  <div id="capture" class="capture bg-darkneon">
+    <div id="headline" class="headline">MOST SIXES</div>
+
+    <div id="templateArea" style="height:calc(100% - 140px)"></div>
+
+    <div class="brand">YourBrand • Cricket</div>
+  </div>
 </div>
 
-<div class="input-panel">
-  <h3>Update Player Data</h3>
-  <div id="inputContainer"></div>
+<div class="panel">
+  <h3>Poster Studio — Pro</h3>
 
-  <label>Download Image Size</label>
-  <select id="imgSize">
-    <option value="1">Small (1080px width)</option>
-    <option value="2" selected>Medium (1920px width)</option>
-    <option value="3">Large (3840px width)</option>
+  <label>Export Type</label>
+  <select id="exportType">
+    <option value="png">PNG (lossless)</option>
+    <option value="jpg">JPG (compressed)</option>
   </select>
 
-  <button class="add-player" onclick="addPlayerInput()">➕ Add Player</button>
-  <button class="update" onclick="updateData()">🔄 Update Data</button>
-  <button class="download" onclick="downloadPNG()">📥 Download PNG</button>
+  <label>Export Size / Preset</label>
+  <select id="exportSize">
+    <option value="1080x1350">1080 × 1350 (Instagram portrait)</option>
+    <option value="1080x1920">1080 × 1920 (Vertical poster)</option>
+    <option value="1920x1080">1920 × 1080 (YouTube thumbnail)</option>
+    <option value="custom">Custom scale (2x current)</option>
+  </select>
+
+  <label>Background Pack</label>
+  <select id="bgSelect">
+    <option value="bg-stadium">A — Stadium Glow</option>
+    <option value="bg-darkneon">B — Dark Neon</option>
+    <option value="bg-tricolor">C — Tricolor</option>
+    <option value="bg-fire">D — Fire</option>
+    <option value="bg-blur">E — Gradient Blur</option>
+    <option value="bg-all">F — All / Mixed</option>
+  </select>
+
+  <label>Layout</label>
+  <select id="layoutSelect">
+    <option value="single">Single Player</option>
+    <option value="dual">Dual Player</option>
+    <option value="three">Three Players</option>
+    <option value="five">Five Players</option>
+  </select>
+
+  <label>Headline Text</label>
+  <input id="headlineInput" type="text" value="MOST SIXES">
+
+  <label>Show flags?</label>
+  <select id="flagToggle">
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+  </select>
+
+  <div class="flex-between" style="margin-top:12px">
+    <button id="addPlayer" class="btn-accent">+ Add Player</button>
+    <button id="exportBtn" class="btn-outline">Export Image</button>
+  </div>
+
+  <div class="drop-hint" id="globalDrop">Drag an image here to add a new player (or drop onto a player's thumbnail)</div>
+
+  <div class="players-ctrl" id="playersCtrl"></div>
+
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button id="clearAll" class="btn-outline small">Clear All</button>
+    <button id="resetDemo" class="btn-outline small">Reset Demo</button>
+  </div>
+
+  <p style="color:var(--muted);font-size:13px;margin-top:12px">
+    Stats shown: Runs, Sixes, Strike Rate, Average, Innings, Matches, Economy.
+  </p>
 </div>
 
 <script>
-let players = [];
+/* ------------------------
+   Data & initial players
+   ------------------------ */
+let players = [
+  {name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219, Sixes:12, SR:132.1, Avg:54.8, Innings:7, Matches:8, Economy:0}, img:''},
+  {name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198, Sixes:10, SR:129.6, Avg:39.6, Innings:5, Matches:6, Economy:0}, img:''},
+  {name:'Shahid Afridi', team:'Pakistan', flag:'🇵🇰', stat:{Runs:180, Sixes:9, SR:125.2, Avg:36.0, Innings:4, Matches:5, Economy:0}, img:''},
+  {name:'Jacques Kallis', team:'SA', flag:'🇿🇦', stat:{Runs:172, Sixes:8, SR:120.4, Avg:43.0, Innings:6, Matches:7, Economy:0}, img:''},
+  {name:'Aaron Finch', team:'Aus', flag:'🇦🇺', stat:{Runs:165, Sixes:7, SR:118.9, Avg:33.0, Innings:5, Matches:6, Economy:0}, img:''}
+];
 
-function addPlayerInput(){
-  const index = players.length+1;
-  players.push({name:'Player Name', team:'Team Name', sixes:0, img:''});
+const capture = document.getElementById('capture');
+const templateArea = document.getElementById('templateArea');
+const bgSelect = document.getElementById('bgSelect');
+const layoutSelect = document.getElementById('layoutSelect');
+const headlineInput = document.getElementById('headlineInput');
+const playersCtrl = document.getElementById('playersCtrl');
+const flagToggle = document.getElementById('flagToggle');
+const exportBtn = document.getElementById('exportBtn');
+const exportType = document.getElementById('exportType');
+const exportSize = document.getElementById('exportSize');
 
-  const div = document.createElement('div');
-  div.id = 'playerInput'+index;
-  div.innerHTML = `
-    <label>Player ${index} Name</label>
-    <input type="text" id="in_name${index}" placeholder="Player Name">
-    <label>Player ${index} Team</label>
-    <input type="text" id="in_team${index}" placeholder="Team Name">
-    <label>Player ${index} Sixes</label>
-    <input type="number" id="in_six${index}" placeholder="0">
-    <label>Player ${index} Image</label>
-    <input type="file" id="in_img${index}" accept="image/*">
-    <hr style="border-color:#152039;margin:10px 0;">
-  `;
-  document.getElementById('inputContainer').appendChild(div);
+/* ------------------------
+   Rendering helpers
+   ------------------------ */
+function createImg(src, cls='', w=140, h=140){
+  const img = document.createElement('img');
+  img.src = src || '';
+  img.className = cls;
+  img.style.width = w+'px'; img.style.height = h+'px';
+  img.onerror = () => { img.style.background = 'linear-gradient(180deg,#052033,#071427)'; img.style.objectFit='cover'; }
+  return img;
+}
 
-  const box = document.createElement('div');
-  box.className = 'player-box';
-  box.id = 'playerBox'+index;
-  box.innerHTML = `
-    <img id="img${index}" class="player-img" src="https://via.placeholder.com/140x140?text=No+Image">
-    <div class="p-details">
-      <h2 id="name${index}" class="p-name">Player Name</h2>
-      <p id="team${index}" class="p-team">Team Name</p>
-    </div>
-    <div id="six${index}" class="p-sixes">0</div>
-  `;
-  document.getElementById('playersWrapper').appendChild(box);
+function clearEl(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 
-  document.getElementById('in_img'+index).addEventListener('change', function(){
-    loadImage(this, document.getElementById('img'+index));
+/* ------------------------
+   Main render function
+   ------------------------ */
+function renderCanvas(){
+  // headline
+  document.getElementById('headline').textContent = headlineInput.value || 'MOST SIXES';
+  // background class
+  capture.className = 'capture ' + bgSelect.value;
+
+  // build layout
+  clearEl(templateArea);
+  const layout = layoutSelect.value;
+  const showFlags = (flagToggle.value === 'yes');
+
+  if(layout === 'single'){
+    // show top player (players[0])
+    const p = players[0] || {name:'Player', team:'Team', stat:{}, img:''};
+    const container = document.createElement('div'); container.className='layout-single';
+
+    const left = document.createElement('div'); left.className='single-left';
+    const img = createImg(p.img, '', left.clientWidth || 600, left.clientHeight || 800);
+    img.style.width='100%'; img.style.height='100%';
+    left.appendChild(img);
+
+    const right = document.createElement('div'); right.className='single-right';
+    const name = document.createElement('div'); name.className='name-large';
+    name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
+    const team = document.createElement('div'); team.className='team-small'; team.textContent = p.team;
+    const statBig = document.createElement('div'); statBig.className='stat-big'; statBig.textContent = p.stat.Runs || 0;
+
+    const statsGrid = document.createElement('div'); statsGrid.className='stats-grid';
+    const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+    statList.forEach(k => {
+      const pill = document.createElement('div'); pill.className='stat-pill';
+      const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
+      pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:16px">${val}</div>`;
+      statsGrid.appendChild(pill);
+    });
+
+    right.appendChild(name); right.appendChild(team); right.appendChild(statBig); right.appendChild(statsGrid);
+
+    container.appendChild(left); container.appendChild(right);
+    templateArea.appendChild(container);
+
+    // animate big number
+    animateNumber(statBig, p.stat.Runs || 0, 800);
+  } else {
+    // list/different player counts
+    let count = 3;
+    if(layout === 'dual') count = 2;
+    if(layout === 'three') count = 3;
+    if(layout === 'five') count = Math.min(5, players.length || 5);
+
+    const list = document.createElement('div'); list.className='layout-list';
+    const showPlayers = players.slice(0, count);
+    showPlayers.forEach((p, idx) => {
+      const card = document.createElement('div'); card.className='player-card';
+      const thumb = createImg(p.img,'player-thumb',140,140); thumb.className='player-thumb';
+      const info = document.createElement('div'); info.style.flex='1';
+      const name = document.createElement('div'); name.className='row-name'; name.style.fontWeight=800; name.style.fontSize='22px';
+      name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
+      const team = document.createElement('div'); team.className='row-team'; team.style.color='var(--muted)'; team.style.marginTop='6px';
+      team.textContent = p.team;
+
+      const statRow = document.createElement('div'); statRow.className='stats-grid';
+      const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+      statList.forEach(k => {
+        const pill = document.createElement('div'); pill.className='stat-pill';
+        const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
+        pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:14px">${val}</div>`;
+        statRow.appendChild(pill);
+      });
+
+      info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
+      card.appendChild(thumb); card.appendChild(info);
+      list.appendChild(card);
+
+      // animate per-player Runs displayed in first stat pill
+      const pillVal = statRow.querySelector('.stat-pill div:nth-child(2)');
+      // pillVal may not be unique; but animation not necessary per small
+    });
+    templateArea.appendChild(list);
+  }
+}
+
+/* ------------------------
+   Player controls panel
+   ------------------------ */
+function renderPlayersControls(){
+  clearEl(playersCtrl);
+  players.forEach((p, idx) => {
+    const div = document.createElement('div'); div.className='player-ctrl';
+    const thumb = createImg(p.img, '', 68, 68); thumb.style.width='68px'; thumb.style.height='68px'; thumb.style.borderRadius='8px';
+    const meta = document.createElement('div'); meta.className='meta';
+    const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.value=p.name; nameInp.placeholder='Player Name';
+    const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value=p.team; teamInp.placeholder='Team';
+    const flagInp = document.createElement('select');
+    ['🇮🇳','🇵🇰','🇦🇺','🇿🇦','🇬🇧','🇳🇿','🇱🇰','🇧🇩','🇺🇸','🇯🇵','🇻🇮'].forEach(f=>{
+      const o = document.createElement('option'); o.value=f; o.innerText=f; if(p.flag===f) o.selected=true; flagInp.appendChild(o);
+    });
+
+    // stats inputs - small grid
+    const statsWrap = document.createElement('div'); statsWrap.style.display='grid'; statsWrap.style.gridTemplateColumns='repeat(3,1fr)'; statsWrap.style.gap='6px'; statsWrap.style.marginTop='8px';
+    const statKeys = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+    statKeys.forEach(k=>{
+      const si = document.createElement('input'); si.type='text'; si.placeholder=k; si.value = p.stat[k] !== undefined ? p.stat[k] : '';
+      si.style.padding='6px'; si.style.borderRadius='6px'; si.style.background='#071826'; si.style.border='none'; si.style.color='#fff';
+      si.addEventListener('input', ()=>{ const v = si.value; p.stat[k] = v; renderCanvas(); });
+      statsWrap.appendChild(si);
+    });
+
+    // file input
+    const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*';
+    fileInp.style.marginTop='8px';
+    fileInp.addEventListener('change', (e)=>{
+      const f = e.target.files?.[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ev => { players[idx].img = ev.target.result; renderPlayersControls(); renderCanvas(); }
+      reader.readAsDataURL(f);
+    });
+
+    // actions
+    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column'; actions.style.gap='6px';
+    const up = document.createElement('button'); up.textContent='↑'; up.className='small btn-outline';
+    const down = document.createElement('button'); down.textContent='↓'; down.className='small btn-outline';
+    const remove = document.createElement('button'); remove.textContent='Remove'; remove.className='small btn-outline';
+    up.addEventListener('click', ()=>{ if(idx>0){ [players[idx-1],players[idx]]=[players[idx],players[idx-1]]; renderPlayersControls(); renderCanvas(); }});
+    down.addEventListener('click', ()=>{ if(idx<players.length-1){ [players[idx+1],players[idx]]=[players[idx],players[idx+1]]; renderPlayersControls(); renderCanvas(); }});
+    remove.addEventListener('click', ()=>{ players.splice(idx,1); renderPlayersControls(); renderCanvas(); });
+    actions.appendChild(up); actions.appendChild(down); actions.appendChild(remove);
+
+    // wire inputs
+    nameInp.addEventListener('input', e=>{ players[idx].name = e.target.value; renderCanvas(); });
+    teamInp.addEventListener('input', e=>{ players[idx].team = e.target.value; renderCanvas(); });
+    flagInp.addEventListener('change', e=>{ players[idx].flag = e.target.value; renderCanvas(); });
+
+    meta.appendChild(nameInp); meta.appendChild(teamInp); meta.appendChild(flagInp); meta.appendChild(statsWrap); meta.appendChild(fileInp);
+
+    div.appendChild(thumb); div.appendChild(meta); div.appendChild(actions);
+    playersCtrl.appendChild(div);
   });
 }
 
-function updateData(){
-  players.forEach((p,i)=>{
-    const index = i+1;
-    const name = document.getElementById('in_name'+index).value || 'Player Name';
-    const team = document.getElementById('in_team'+index).value || 'Team Name';
-    const sixes = parseInt(document.getElementById('in_six'+index).value || '0');
-    document.getElementById('name'+index).textContent = name;
-    document.getElementById('team'+index).textContent = team;
-    animateCounter(document.getElementById('six'+index), sixes);
-  });
+/* ------------------------
+   Animate helper
+   ------------------------ */
+function animateNumber(el, target, duration=600){
+  const start = Number(el.textContent.replace(/\D/g,'')) || 0;
+  const diff = target - start;
+  if(diff === 0){ el.textContent = target; return; }
+  const frames = Math.min(60, Math.max(12, Math.floor(duration/16)));
+  let frame = 0;
+  const id = setInterval(()=>{
+    frame++;
+    const val = Math.round(start + diff * (frame/frames));
+    el.textContent = val;
+    if(frame >= frames) clearInterval(id);
+  }, duration/frames);
 }
 
-function animateCounter(element, target){
-  let count = parseInt(element.textContent) || 0;
-  const duration = 800;
-  const stepTime = 20;
-  const steps = duration / stepTime;
-  let step = (target - count)/steps;
-  let currentStep = 0;
-  const interval = setInterval(()=>{
-    count += step;
-    currentStep++;
-    if(currentStep >= steps){
-      count = target;
-      clearInterval(interval);
-    }
-    element.textContent = Math.round(count);
-  }, stepTime);
+/* ------------------------
+   Export function using html2canvas
+   ------------------------ */
+async function exportImage(){
+  // determine size
+  const preset = exportSize.value;
+  let width = capture.clientWidth;
+  let height = capture.clientHeight;
+  if(preset === '1080x1350'){ width=1080;height=1350; }
+  else if(preset === '1080x1920'){ width=1080;height=1920; }
+  else if(preset === '1920x1080'){ width=1920;height=1080; }
+  else { width = capture.clientWidth * 2; height = capture.clientHeight * 2; }
+
+  const type = exportType.value === 'jpg' ? 'image/jpeg' : 'image/png';
+  const scale = Math.max(1, Math.min(4, (width / capture.clientWidth)));
+
+  // temporarily set background to white for jpg if tricolor uses white text? we keep as-is
+  const canvas = await html2canvas(capture, {width: Math.round(capture.clientWidth), height: Math.round(capture.clientHeight), scale: scale, useCORS:true, backgroundColor: null});
+  // canvas is the captured size scaled
+  let finalCanvas = canvas;
+  // if requested size differs, draw scaled to new canvas
+  if(canvas.width !== width || canvas.height !== height){
+    finalCanvas = document.createElement('canvas');
+    finalCanvas.width = width; finalCanvas.height = height;
+    const ctx = finalCanvas.getContext('2d');
+    // fill background for jpg when background is transparent? keep original bg.
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0,0,width,height);
+    ctx.drawImage(canvas, 0, 0, width, height);
+  }
+
+  const dataURL = finalCanvas.toDataURL(type, 0.92);
+  const a = document.createElement('a'); a.href = dataURL;
+  const ext = type === 'image/jpeg' ? 'jpg' : 'png';
+  a.download = `poster-${Date.now()}.${ext}`; a.click();
 }
 
-function loadImage(input,target){
-  const file = input.files?.[0];
-  if(!file) return;
+/* ------------------------
+   Drag & drop global to add player
+   ------------------------ */
+const globalDrop = document.getElementById('globalDrop');
+globalDrop.addEventListener('dragover', e=>{ e.preventDefault(); globalDrop.style.borderColor='var(--accent)'; });
+globalDrop.addEventListener('dragleave', e=>{ globalDrop.style.borderColor='rgba(255,255,255,0.03)'; });
+globalDrop.addEventListener('drop', e=>{
+  e.preventDefault(); globalDrop.style.borderColor='rgba(255,255,255,0.03)';
+  const f = e.dataTransfer.files?.[0]; if(!f || !f.type.startsWith('image/')) return;
   const reader = new FileReader();
-  reader.onload = e => target.src = e.target.result;
-  reader.readAsDataURL(file);
-}
+  reader.onload = ev => { players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{},img:ev.target.result}); renderPlayersControls(); renderCanvas(); }
+  reader.readAsDataURL(f);
+});
 
-// Download with selectable size
-function downloadPNG(){
-  const size = document.getElementById('imgSize').value;
-  let scale = 1;
-  if(size == "1") scale = 1;       // Small
-  else if(size == "2") scale = 2;  // Medium
-  else if(size == "3") scale = 4;  // Large
+/* ------------------------
+   UI bindings
+   ------------------------ */
+document.getElementById('addPlayer').addEventListener('click', ()=>{
+  players.push({name:'New Player', team:'Team', flag:'🇮🇳', stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0}, img:''});
+  renderPlayersControls(); renderCanvas();
+});
+document.getElementById('clearAll').addEventListener('click', ()=>{
+  if(confirm('Clear all players?')){ players=[]; renderPlayersControls(); renderCanvas(); }
+});
+document.getElementById('resetDemo').addEventListener('click', ()=>{
+  players = [
+    {name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219,Sixes:12,SR:132.1,Avg:54.8,Innings:7,Matches:8,Economy:0}, img:''},
+    {name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198,Sixes:10,SR:129.6,Avg:39.6,Innings:5,Matches:6,Economy:0}, img:''},
+    {name:'Shahid Afridi', team:'Pakistan', flag:'🇵🇰', stat:{Runs:180,Sixes:9,SR:125.2,Avg:36.0,Innings:4,Matches:5,Economy:0}, img:''},
+    {name:'Jacques Kallis', team:'SA', flag:'🇿🇦', stat:{Runs:172,Sixes:8,SR:120.4,Avg:43.0,Innings:6,Matches:7,Economy:0}, img:''},
+    {name:'Aaron Finch', team:'Aus', flag:'🇦🇺', stat:{Runs:165,Sixes:7,SR:118.9,Avg:33.0,Innings:5,Matches:6,Economy:0}, img:''}
+  ];
+  renderPlayersControls(); renderCanvas();
+});
+exportBtn.addEventListener('click', exportImage);
+bgSelect.addEventListener('change', renderCanvas);
+layoutSelect.addEventListener('change', renderCanvas);
+headlineInput.addEventListener('input', renderCanvas);
+flagToggle.addEventListener('change', renderCanvas);
+exportType.addEventListener('change', ()=>{/* nothing required */});
+exportSize.addEventListener('change', ()=>{/* nothing required */});
 
-  html2canvas(document.getElementById('capture'), {scale:scale, backgroundColor:null}).then(canvas=>{
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
-    link.download = `most-sixes-${size}.png`;
-    link.click();
-  });
-}
+/* file-drop on player thumbnail handled in controls render */
 
-// Start with one player
-addPlayerInput();
+/* initial render */
+renderPlayersControls();
+renderCanvas();
 </script>
-
 </body>
 </html>
