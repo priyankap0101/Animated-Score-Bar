@@ -3,78 +3,87 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Cricket Poster Studio — Pro</title>
+<title>Poster Studio — Pro (All Features)</title>
+<!-- html2canvas for export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#06101a; --card:#0c1624; --accent:#00eaff; --muted:#9fb0c6; --gold:#f7c948;
+    --bg:#071026; --panel:#071427; --accent:#00eaff; --muted:#9fb0c6; --gold:#f7c948;
+    --card-radius:12px;
   }
   *{box-sizing:border-box}
   body{
-    margin:0;padding:18px;background:linear-gradient(180deg,#030617 0%,#081025 100%);
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
-    color:#fff;display:flex;gap:18px;min-height:100vh;
+    margin:0;padding:16px;background:linear-gradient(180deg,#020318 0%,#071026 100%);
+    font-family:Inter,system-ui,Arial;color:#fff;display:flex;gap:14px;min-height:100vh;
   }
 
-  /* left: canvas */
-  .canvas-wrap{flex:1;display:flex;justify-content:center;align-items:flex-start;}
-  .capture{
-    width:1080px;height:1350px;border-radius:18px;padding:34px;
-    background:linear-gradient(165deg,#071022 0%,#0b1730 100%);
-    box-shadow:0 30px 80px rgba(0,0,0,0.6);position:relative;overflow:hidden;
+  /* LEFT: Studio Canvas */
+  .canvas-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px}
+  .preview-controls{width:1080px;display:flex;gap:10px;justify-content:flex-end;align-items:center}
+  .capture {
+    width:1080px;height:1350px;border-radius:18px;padding:28px;
+    background:var(--bg);position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6);
+    transition:all .3s ease;
   }
 
-  /* headline */
+  /* theme transition */
+  .capture *, .capture { transition: all 300ms ease; }
+
   .headline{
     text-align:center;font-family:'Bebas Neue',sans-serif;
-    font-size:64px;color:var(--accent);letter-spacing:2px;margin-bottom:18px;
+    font-size:56px;color:var(--accent);letter-spacing:2px;margin-bottom:12px;
     text-shadow:0 6px 28px rgba(0,234,255,0.08),0 0 18px rgba(0,234,255,0.12);
+    display:flex;align-items:center;justify-content:center;gap:10px;
   }
 
-  /* backgrounds (templates) */
+  /* Background presets are applied as classes */
   .bg-stadium{ background-image:
     radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 10%),
-    linear-gradient(150deg,#071026 0%, #07112a 100%);}
+    linear-gradient(150deg,#071026 0%, #07112a 100%); }
   .bg-darkneon{ background: linear-gradient(135deg,#020616,#07142a); }
   .bg-tricolor{ background: linear-gradient(180deg,#ff9933 0%, #ffffff 50%, #138808 100%); color:#071022; }
   .bg-fire{ background: linear-gradient(135deg,#2b0600,#6b0f00); }
-  .bg-blur{ background: linear-gradient(135deg,#0e2442,#111530); filter: none; }
+  .bg-blur{ background: linear-gradient(135deg,#0e2442,#111530); }
   .bg-all{ background: linear-gradient(135deg,#061626,#2b0a1a); }
 
-  /* layout containers */
-  .layout-single{ display:flex; gap:22px; align-items:center; height:calc(100% - 120px); }
-  .single-left{ width:55%; height:100%; border-radius:12px; overflow:hidden; position:relative; }
-  .single-left img{ width:100%; height:100%; object-fit:cover; display:block; filter:contrast(1.02); }
-  .single-right{ flex:1; padding:20px; display:flex;flex-direction:column; justify-content:center; gap:12px; }
-  .name-large{ font-family:'Bebas Neue'; font-size:48px; color:#fff; text-shadow:0 4px 20px rgba(0,0,0,0.5); }
-  .team-small{ color:var(--muted); font-weight:600; }
-  .stat-big{ font-family:'Bebas Neue'; font-size:120px; color:var(--gold); line-height:0.85; text-shadow: 0 8px 40px rgba(247,201,72,0.08); }
+  /* Effects overlay (vignette, grain) */
+  .effects-overlay{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:overlay; }
 
-  .layout-list{ display:flex;flex-direction:column; gap:14px; max-height:calc(100% - 120px); overflow:auto; }
-  .player-card{ display:flex; align-items:center; gap:16px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
-  .player-thumb{ width:140px; height:140px; border-radius:10px; object-fit:cover; border:4px solid rgba(255,255,255,0.03); }
+  /* layout containers */
+  .layout-single{ display:flex; gap:20px; align-items:center; height:calc(100% - 120px); }
+  .single-left{ width:55%; height:100%; border-radius:12px; overflow:hidden; position:relative; }
+  .single-left .img-frame{ width:100%; height:100%; background:#081424; position:relative; overflow:hidden; }
+  .single-left .img-frame img{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:none; min-width:100%; min-height:100%; object-fit:cover; transition:transform .12s ease; user-select:none; pointer-events:none; }
+  .single-right{ flex:1; padding:20px; display:flex;flex-direction:column; justify-content:center; gap:12px; }
+
+  .name-large{ font-family:'Bebas Neue'; font-size:46px; color:#fff; text-shadow:0 4px 24px rgba(0,0,0,0.6); }
+  .team-small{ color:var(--muted); font-weight:600; }
+  .stat-big{ font-family:'Bebas Neue'; font-size:110px; color:var(--gold); line-height:0.85; text-shadow: 0 8px 40px rgba(247,201,72,0.08); }
+
+  .layout-list{ display:flex;flex-direction:column; gap:12px; max-height:calc(100% - 120px); overflow:auto; padding-right:8px; }
+  .player-card{ display:flex; align-items:center; gap:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
+  .player-thumb{ width:140px;height:140px;border-radius:10px;object-fit:cover;border:4px solid rgba(255,255,255,0.03); }
 
   .stats-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:8px; }
   .stat-pill{ padding:8px 10px; background:rgba(0,0,0,0.35); border-radius:8px; font-weight:700; font-size:14px; text-align:center; }
 
-  .brand{ position:absolute; left:28px; bottom:20px; color:rgba(255,255,255,0.12); font-weight:700; }
+  .brand{ position:absolute; left:26px; bottom:18px; color:rgba(255,255,255,0.12); font-weight:700; }
 
-  /* side panel (controls) */
-  .panel{ width:400px; background:linear-gradient(180deg,#071427,#071424); border-radius:12px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,0.6); overflow:auto; max-height:92vh;}
+  /* RIGHT: control panel */
+  .panel{ width:420px;background:linear-gradient(180deg,#071427,#071424); border-radius:12px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,0.6); overflow:auto; max-height:94vh;}
   .panel h3{ margin:6px 0 14px 0; color:var(--accent); font-family:'Bebas Neue'; font-size:20px; }
   label{ display:block; color:var(--muted); margin-top:10px; font-weight:600; font-size:13px; }
   input[type="text"], input[type="number"], select, textarea{
     width:100%; padding:10px; border-radius:8px; border:none; background:#081a2b; color:#fff; margin-top:8px;
   }
   .row{ display:flex; gap:8px; margin-top:10px; }
-  button{ cursor:pointer; border:none; border-radius:8px; padding:10px 12px; font-weight:700; }
+  button{ cursor:pointer; border:none; border-radius:8px; padding:8px 10px; font-weight:700; }
   .btn-accent{ background:var(--accent); color:#04202a; }
   .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
   .small{ font-size:13px; padding:8px 10px; }
 
   .players-ctrl{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
-
   .player-ctrl{ display:flex; gap:10px; align-items:flex-start; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; }
   .player-ctrl img{ width:68px; height:68px; object-fit:cover; border-radius:8px; }
   .player-ctrl .meta{ flex:1; }
@@ -84,50 +93,53 @@
 
   .flex-between{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
 
-  /* responsive smaller */
-  @media(max-width:1200){
-    .panel{ width:360px; }
-    .capture{ width:900px; height:1200px; }
-  }
+  /* small helpers */
+  .control-row{display:flex;gap:8px;margin-top:8px}
+  .color{width:36px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
+
+  /* responsive */
+  @media(max-width:1180){ .panel{ width:360px; } .capture{ width:900px;height:1200px; } }
 </style>
 </head>
 <body>
 
+<!-- LEFT: Canvas -->
 <div class="canvas-wrap">
+  <div class="preview-controls">
+    <select id="previewFrame" title="Preview frame">
+      <option value="none">Studio</option>
+      <option value="ig">Instagram 1080×1350</option>
+      <option value="yt">YouTube 1920×1080</option>
+      <option value="short">Shorts 1080×1920</option>
+    </select>
+    <button id="togglePreview" class="btn-outline small">Toggle Guides</button>
+  </div>
+
   <div id="capture" class="capture bg-darkneon">
-    <div id="headline" class="headline">MOST SIXES</div>
+    <div class="headline" id="headlinePreview">
+      <input id="headlineText" type="text" value="MOST SIXES" style="font-family:'Bebas Neue';font-size:56px;background:transparent;border:none;color:var(--accent);width:70%;text-align:center;outline:none" />
+      <input id="headlineFontSize" type="number" value="56" min="20" max="140" style="width:78px;background:#071a26;border-radius:8px;padding:6px;color:#fff;margin-left:6px;" title="Font size" />
+    </div>
 
-    <div id="templateArea" style="height:calc(100% - 140px)"></div>
+    <div id="templateArea" style="height:calc(100% - 120px)"></div>
 
+    <div class="effects-overlay" id="effectsOverlay"></div>
     <div class="brand">YourBrand • Cricket</div>
   </div>
 </div>
 
+<!-- RIGHT: Panel -->
 <div class="panel">
   <h3>Poster Studio — Pro</h3>
 
-  <label>Export Type</label>
-  <select id="exportType">
-    <option value="png">PNG (lossless)</option>
-    <option value="jpg">JPG (compressed)</option>
-  </select>
-
-  <label>Export Size / Preset</label>
-  <select id="exportSize">
-    <option value="1080x1350">1080 × 1350 (Instagram portrait)</option>
-    <option value="1080x1920">1080 × 1920 (Vertical poster)</option>
-    <option value="1920x1080">1920 × 1080 (YouTube thumbnail)</option>
-    <option value="custom">Custom scale (2x current)</option>
-  </select>
-
-  <label>Background Pack</label>
+  <label>Theme / Background</label>
   <select id="bgSelect">
     <option value="bg-stadium">A — Stadium Glow</option>
     <option value="bg-darkneon">B — Dark Neon</option>
     <option value="bg-tricolor">C — Tricolor</option>
     <option value="bg-fire">D — Fire</option>
     <option value="bg-blur">E — Gradient Blur</option>
-    <option value="bg-all">F — All / Mixed</option>
+    <option value="bg-all">F — Mixed</option>
   </select>
 
   <label>Layout</label>
@@ -138,100 +150,162 @@
     <option value="five">Five Players</option>
   </select>
 
-  <label>Headline Text</label>
-  <input id="headlineInput" type="text" value="MOST SIXES">
+  <label>Headline Options</label>
+  <div class="control-row">
+    <select id="headlineFont">
+      <option value="'Bebas Neue',sans-serif">Bebas Neue</option>
+      <option value="Inter, sans-serif">Inter</option>
+      <option value="Arial, sans-serif">Arial</option>
+    </select>
+    <input id="headlineColor" type="color" value="#00eaff" title="Headline color" />
+  </div>
 
-  <label>Show flags?</label>
-  <select id="flagToggle">
-    <option value="yes">Yes</option>
-    <option value="no">No</option>
-  </select>
+  <label>Effects</label>
+  <div class="control-row">
+    <label style="font-size:13px">Vignette
+      <input id="vignette" type="range" min="0" max="1" step="0.05" value="0.35">
+    </label>
+    <label style="font-size:13px">Grain
+      <input id="grain" type="range" min="0" max="1" step="0.05" value="0.08">
+    </label>
+  </div>
+
+  <label>Accent Color</label>
+  <input id="accentColor" type="color" value="#00eaff">
+
+  <label>Smart Highlight Rules</label>
+  <div style="font-size:13px;color:var(--muted);margin-top:6px">Highlight Runs & Sixes when above threshold</div>
+  <div class="control-row" style="margin-top:8px">
+    <input id="runsThreshold" type="number" value="200" style="width:80px" />
+    <input id="sixesThreshold" type="number" value="10" style="width:80px" />
+  </div>
 
   <div class="flex-between" style="margin-top:12px">
     <button id="addPlayer" class="btn-accent">+ Add Player</button>
-    <button id="exportBtn" class="btn-outline">Export Image</button>
+    <button id="saveTemplate" class="btn-outline">Save Template</button>
   </div>
 
-  <div class="drop-hint" id="globalDrop">Drag an image here to add a new player (or drop onto a player's thumbnail)</div>
+  <div style="margin-top:10px;" class="drop-hint" id="globalDrop">Drag an image here to add a new player</div>
 
   <div class="players-ctrl" id="playersCtrl"></div>
 
-  <div style="margin-top:12px;display:flex;gap:8px">
-    <button id="clearAll" class="btn-outline small">Clear All</button>
+  <hr style="border:0;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+
+  <label>Export</label>
+  <div class="control-row">
+    <select id="exportType"><option value="png">PNG</option><option value="jpg">JPG</option></select>
+    <select id="exportSize"><option value="1080x1350">1080×1350</option><option value="1080x1920">1080×1920</option><option value="1920x1080">1920×1080</option><option value="capture">Current</option></select>
+  </div>
+  <div style="margin-top:8px" class="control-row">
+    <label>Scale <input id="exportScale" type="range" min="1" max="3" value="1" step="0.1"></label>
+    <label><input id="transparent" type="checkbox"> Transparent PNG</label>
+  </div>
+
+  <div class="flex-between" style="margin-top:12px">
+    <button id="exportBtn" class="btn-accent">Export Image</button>
+    <button id="exportJson" class="btn-outline">Export JSON</button>
+  </div>
+
+  <div style="margin-top:8px" class="flex-between">
+    <button id="importJsonBtn" class="btn-outline">Import JSON</button>
+    <input id="jsonFile" type="file" accept=".json" style="display:none">
+  </div>
+
+  <div style="margin-top:12px" class="flex-between">
     <button id="resetDemo" class="btn-outline small">Reset Demo</button>
+    <button id="clearAll" class="btn-outline small">Clear All</button>
   </div>
 
   <p style="color:var(--muted);font-size:13px;margin-top:12px">
-    Stats shown: Runs, Sixes, Strike Rate, Average, Innings, Matches, Economy.
+    Changes autosave locally. Use Export JSON to save project, Import JSON to load.
   </p>
 </div>
 
 <script>
-/* ------------------------
-   Data & initial players
-   ------------------------ */
-let players = [
-  {name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219, Sixes:12, SR:132.1, Avg:54.8, Innings:7, Matches:8, Economy:0}, img:''},
-  {name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198, Sixes:10, SR:129.6, Avg:39.6, Innings:5, Matches:6, Economy:0}, img:''},
-  {name:'Shahid Afridi', team:'Pakistan', flag:'🇵🇰', stat:{Runs:180, Sixes:9, SR:125.2, Avg:36.0, Innings:4, Matches:5, Economy:0}, img:''},
-  {name:'Jacques Kallis', team:'SA', flag:'🇿🇦', stat:{Runs:172, Sixes:8, SR:120.4, Avg:43.0, Innings:6, Matches:7, Economy:0}, img:''},
-  {name:'Aaron Finch', team:'Aus', flag:'🇦🇺', stat:{Runs:165, Sixes:7, SR:118.9, Avg:33.0, Innings:5, Matches:6, Economy:0}, img:''}
+/* ===========================
+   PRO Poster Studio - Core
+   =========================== */
+
+/* --- state --- */
+let players = JSON.parse(localStorage.getItem('ps_players')) || [
+  { name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219,Sixes:12,SR:132.1,Avg:54.8,Innings:7,Matches:8,Economy:0}, img:'', pos:{x:50,y:50,scale:1}, locked:false },
+  { name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198,Sixes:10,SR:129.6,Avg:39.6,Innings:5,Matches:6,Economy:0}, img:'', pos:{x:50,y:50,scale:1}, locked:false }
 ];
 
 const capture = document.getElementById('capture');
 const templateArea = document.getElementById('templateArea');
-const bgSelect = document.getElementById('bgSelect');
-const layoutSelect = document.getElementById('layoutSelect');
-const headlineInput = document.getElementById('headlineInput');
 const playersCtrl = document.getElementById('playersCtrl');
-const flagToggle = document.getElementById('flagToggle');
-const exportBtn = document.getElementById('exportBtn');
-const exportType = document.getElementById('exportType');
-const exportSize = document.getElementById('exportSize');
 
-/* ------------------------
-   Rendering helpers
-   ------------------------ */
-function createImg(src, cls='', w=140, h=140){
-  const img = document.createElement('img');
-  img.src = src || '';
-  img.className = cls;
-  img.style.width = w+'px'; img.style.height = h+'px';
-  img.onerror = () => { img.style.background = 'linear-gradient(180deg,#052033,#071427)'; img.style.objectFit='cover'; }
-  return img;
-}
-
+/* helpers */
+function saveState(){ localStorage.setItem('ps_players', JSON.stringify(players)); }
 function clearEl(el){ while(el.firstChild) el.removeChild(el.firstChild); }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
-/* ------------------------
-   Main render function
-   ------------------------ */
+/* render canvas according to layout */
 function renderCanvas(){
+  // theme/background
+  const bg = document.getElementById('bgSelect').value;
+  capture.className = 'capture ' + bg;
+
   // headline
-  document.getElementById('headline').textContent = headlineInput.value || 'MOST SIXES';
-  // background class
-  capture.className = 'capture ' + bgSelect.value;
+  const hf = document.getElementById('headlineFont').value || "'Bebas Neue',sans-serif";
+  const ht = document.getElementById('headlineText').value || 'MOST SIXES';
+  const hsize = Number(document.getElementById('headlineFontSize').value) || 56;
+  const hcolor = document.getElementById('headlineColor').value || '#00eaff';
+  document.getElementById('headlinePreview').style.fontFamily = hf;
+  document.getElementById('headlineText').style.color = hcolor;
+  document.getElementById('headlineText').style.fontSize = hsize + 'px';
 
-  // build layout
+  // effects overlay (vignette + grain)
+  const vign = Number(document.getElementById('vignette').value);
+  const grain = Number(document.getElementById('grain').value);
+  const effectsOverlay = document.getElementById('effectsOverlay');
+  effectsOverlay.innerHTML = '';
+  effectsOverlay.style.pointerEvents = 'none';
+
+  // vignette using radial-gradient
+  const v = document.createElement('div');
+  v.style.position='absolute'; v.style.inset='0';
+  v.style.background = `radial-gradient(ellipse at center, rgba(0,0,0,${vign*0.2}) 0%, rgba(0,0,0,${vign}) 80%)`;
+  v.style.mixBlendMode='multiply'; v.style.pointerEvents='none';
+  effectsOverlay.appendChild(v);
+
+  // grain overlay (canvas)
+  if(grain>0){
+    const g = document.createElement('div');
+    g.style.position='absolute'; g.style.inset='0';
+    g.style.backgroundImage = `url(${createNoiseDataURL(Math.round(grain*2))})`;
+    g.style.opacity = Math.min(0.6, grain); g.style.pointerEvents='none';
+    effectsOverlay.appendChild(g);
+  }
+
+  // layout
   clearEl(templateArea);
-  const layout = layoutSelect.value;
-  const showFlags = (flagToggle.value === 'yes');
-
+  const layout = document.getElementById('layoutSelect').value;
+  const showFlags = document.getElementById('flagToggle').value === 'yes';
+  // choose list (multi) or single
   if(layout === 'single'){
-    // show top player (players[0])
-    const p = players[0] || {name:'Player', team:'Team', stat:{}, img:''};
+    const p = players[0] || {name:'Player',team:'Team',flag:'',stat:{},img:'',pos:{x:50,y:50,scale:1}};
     const container = document.createElement('div'); container.className='layout-single';
-
+    // left image frame
     const left = document.createElement('div'); left.className='single-left';
-    const img = createImg(p.img, '', left.clientWidth || 600, left.clientHeight || 800);
-    img.style.width='100%'; img.style.height='100%';
-    left.appendChild(img);
+    const frame = document.createElement('div'); frame.className='img-frame';
+    const img = document.createElement('img'); img.src = p.img || '';
+    img.alt = p.name;
+    // position + scale
+    img.style.transform = `translate(-50%,-50%) translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
+    frame.appendChild(img);
+    // attach drag-to-position for img if not locked
+    if(!p.locked) attachImageDrag(img, p);
+    left.appendChild(frame);
 
+    // right stat block
     const right = document.createElement('div'); right.className='single-right';
     const name = document.createElement('div'); name.className='name-large';
     name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
     const team = document.createElement('div'); team.className='team-small'; team.textContent = p.team;
-    const statBig = document.createElement('div'); statBig.className='stat-big'; statBig.textContent = p.stat.Runs || 0;
+    const statBig = document.createElement('div'); statBig.className='stat-big';
+    statBig.textContent = p.stat.Runs || 0;
 
     const statsGrid = document.createElement('div'); statsGrid.className='stats-grid';
     const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
@@ -240,213 +314,288 @@ function renderCanvas(){
       const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
       pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:16px">${val}</div>`;
       statsGrid.appendChild(pill);
+      // smart highlight
+      const runsT = Number(document.getElementById('runsThreshold').value||0);
+      const sixesT = Number(document.getElementById('sixesThreshold').value||0);
+      if(k==='Runs' && Number(val) >= runsT) pill.style.background = 'linear-gradient(90deg,#ffd966,#f7c948)';
+      if(k==='Sixes' && Number(val) >= sixesT) pill.style.background = 'linear-gradient(90deg,#ff9b5c,#ff6b3a)';
     });
 
     right.appendChild(name); right.appendChild(team); right.appendChild(statBig); right.appendChild(statsGrid);
-
     container.appendChild(left); container.appendChild(right);
     templateArea.appendChild(container);
-
-    // animate big number
-    animateNumber(statBig, p.stat.Runs || 0, 800);
+    animateNumber(statBig, Number(p.stat.Runs||0), 900);
   } else {
-    // list/different player counts
-    let count = 3;
-    if(layout === 'dual') count = 2;
-    if(layout === 'three') count = 3;
-    if(layout === 'five') count = Math.min(5, players.length || 5);
-
     const list = document.createElement('div'); list.className='layout-list';
-    const showPlayers = players.slice(0, count);
-    showPlayers.forEach((p, idx) => {
+    let count = 3;
+    if(layout==='dual') count=2; if(layout==='three') count=3; if(layout==='five') count=Math.min(5,players.length||5);
+    const showPlayers = players.slice(0,count);
+    showPlayers.forEach(p=>{
       const card = document.createElement('div'); card.className='player-card';
-      const thumb = createImg(p.img,'player-thumb',140,140); thumb.className='player-thumb';
+      const thumbFrame = document.createElement('div'); thumbFrame.style.width='140px'; thumbFrame.style.height='140px'; thumbFrame.style.overflow='hidden'; thumbFrame.style.borderRadius='12px';
+      const thumb = document.createElement('img'); thumb.className='player-thumb'; thumb.src = p.img || ''; thumb.style.transform = `translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
+      if(!p.locked) attachImageDrag(thumb,p);
+      thumbFrame.appendChild(thumb);
       const info = document.createElement('div'); info.style.flex='1';
-      const name = document.createElement('div'); name.className='row-name'; name.style.fontWeight=800; name.style.fontSize='22px';
-      name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
-      const team = document.createElement('div'); team.className='row-team'; team.style.color='var(--muted)'; team.style.marginTop='6px';
-      team.textContent = p.team;
-
+      const name = document.createElement('div'); name.style.fontWeight=800; name.style.fontSize='20px'; name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
+      const team = document.createElement('div'); team.style.color='var(--muted)'; team.style.marginTop='6px'; team.textContent = p.team;
       const statRow = document.createElement('div'); statRow.className='stats-grid';
-      const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
-      statList.forEach(k => {
+      ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'].forEach(k=>{
         const pill = document.createElement('div'); pill.className='stat-pill';
-        const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
+        const val = p.stat[k] !== undefined ? p.stat[k] : '';
         pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:14px">${val}</div>`;
         statRow.appendChild(pill);
+        if(k==='Runs' && Number(val) >= Number(document.getElementById('runsThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ffd966,#f7c948)';
+        if(k==='Sixes' && Number(val) >= Number(document.getElementById('sixesThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ff9b5c,#ff6b3a)';
       });
-
       info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
-      card.appendChild(thumb); card.appendChild(info);
+      card.appendChild(thumbFrame); card.appendChild(info);
       list.appendChild(card);
-
-      // animate per-player Runs displayed in first stat pill
-      const pillVal = statRow.querySelector('.stat-pill div:nth-child(2)');
-      // pillVal may not be unique; but animation not necessary per small
     });
     templateArea.appendChild(list);
   }
+  saveState();
 }
 
-/* ------------------------
-   Player controls panel
-   ------------------------ */
+/* attach drag to reposition image inside its frame */
+function attachImageDrag(imgEl, player){
+  // pointer events to change player.pos.x/y by dragging on the image
+  let dragging = false;
+  let startX=0,startY=0, startLeft=player.pos.x, startTop=player.pos.y;
+  imgEl.style.cursor='grab';
+  const onDown = (e) => {
+    if(player.locked) return;
+    dragging = true; imgEl.style.cursor='grabbing';
+    startX = e.clientX; startY = e.clientY; startLeft = player.pos.x; startTop = player.pos.y;
+    e.preventDefault();
+  };
+  const onMove = (e) => {
+    if(!dragging) return;
+    const dx = (e.clientX - startX) / (imgEl.parentElement.clientWidth) * 100;
+    const dy = (e.clientY - startY) / (imgEl.parentElement.clientHeight) * 100;
+    player.pos.x = clamp(startLeft + dx, -100, 200);
+    player.pos.y = clamp(startTop + dy, -100, 200);
+    imgEl.style.transform = `translate(-50%,-50%) translate(${player.pos.x-50}%,${player.pos.y-50}%) scale(${player.pos.scale})`;
+  };
+  const onUp = (e) => { if(dragging){ dragging=false; imgEl.style.cursor='grab'; saveState(); } };
+  imgEl.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+}
+
+/* players control panel - drag reorder etc */
 function renderPlayersControls(){
   clearEl(playersCtrl);
-  players.forEach((p, idx) => {
+  players.forEach((p,idx)=>{
     const div = document.createElement('div'); div.className='player-ctrl';
-    const thumb = createImg(p.img, '', 68, 68); thumb.style.width='68px'; thumb.style.height='68px'; thumb.style.borderRadius='8px';
+    div.draggable = true;
+    div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', idx); div.style.opacity=0.5; });
+    div.addEventListener('dragend', ()=>{ div.style.opacity=1; });
+
+    div.addEventListener('drop', e=>{
+      e.preventDefault();
+      const from = Number(e.dataTransfer.getData('text/plain'));
+      const to = idx;
+      if(!Number.isNaN(from)){
+        const item = players.splice(from,1)[0];
+        players.splice(to,0,item);
+        renderPlayersControls(); renderCanvas();
+      }
+    });
+    div.addEventListener('dragover', e=>e.preventDefault());
+
+    const thumb = document.createElement('img'); thumb.src = p.img || ''; thumb.alt='thumb';
+    thumb.style.width='68px'; thumb.style.height='68px'; thumb.style.borderRadius='8px'; thumb.style.objectFit='cover';
     const meta = document.createElement('div'); meta.className='meta';
-    const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.value=p.name; nameInp.placeholder='Player Name';
-    const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value=p.team; teamInp.placeholder='Team';
-    const flagInp = document.createElement('select');
+
+    const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.value=p.name;
+    const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value=p.team;
+
+    const flagSel = document.createElement('select');
     ['🇮🇳','🇵🇰','🇦🇺','🇿🇦','🇬🇧','🇳🇿','🇱🇰','🇧🇩','🇺🇸','🇯🇵','🇻🇮'].forEach(f=>{
-      const o = document.createElement('option'); o.value=f; o.innerText=f; if(p.flag===f) o.selected=true; flagInp.appendChild(o);
+      const o=document.createElement('option'); o.value=f; o.innerText=f; if(p.flag===f) o.selected=true; flagSel.appendChild(o);
     });
 
-    // stats inputs - small grid
-    const statsWrap = document.createElement('div'); statsWrap.style.display='grid'; statsWrap.style.gridTemplateColumns='repeat(3,1fr)'; statsWrap.style.gap='6px'; statsWrap.style.marginTop='8px';
+    // scale slider
+    const scaleRow = document.createElement('div'); scaleRow.style.display='flex'; scaleRow.style.gap='6px'; scaleRow.style.marginTop='6px';
+    const scaleLabel = document.createElement('div'); scaleLabel.textContent='Scale'; scaleLabel.style.fontSize='12px'; scaleLabel.style.color='var(--muted)';
+    const scaleInp = document.createElement('input'); scaleInp.type='range'; scaleInp.min=0.5; scaleInp.max=2; scaleInp.step=0.01; scaleInp.value=p.pos.scale || 1;
+    scaleInp.addEventListener('input', ()=>{ p.pos.scale = Number(scaleInp.value); renderCanvas(); });
+
+    scaleRow.appendChild(scaleLabel); scaleRow.appendChild(scaleInp);
+
+    // lock checkbox
+    const lockBtn = document.createElement('button'); lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; lockBtn.className='btn-outline small';
+    lockBtn.addEventListener('click', ()=>{ p.locked = !p.locked; lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; renderPlayersControls(); });
+
+    // file input to upload image
+    const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*';
+    fileInp.addEventListener('change', (e)=>{
+      const f = e.target.files?.[0]; if(!f) return;
+      const r = new FileReader(); r.onload = ev => { p.img = ev.target.result; renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
+    });
+
+    // delete/duplicate
+    const dupBtn = document.createElement('button'); dupBtn.textContent='Duplicate'; dupBtn.className='btn-outline small';
+    dupBtn.addEventListener('click', ()=>{ const copy = JSON.parse(JSON.stringify(p)); players.push(copy); renderPlayersControls(); renderCanvas(); saveState(); });
+    const delBtn = document.createElement('button'); delBtn.textContent='Delete'; delBtn.className='btn-outline small';
+    delBtn.addEventListener('click', ()=>{ players.splice(idx,1); renderPlayersControls(); renderCanvas(); saveState(); });
+
+    // stats mini inputs
     const statKeys = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+    const statWrap = document.createElement('div'); statWrap.style.display='grid'; statWrap.style.gridTemplateColumns='repeat(4,1fr)'; statWrap.style.gap='6px'; statWrap.style.marginTop='8px';
     statKeys.forEach(k=>{
       const si = document.createElement('input'); si.type='text'; si.placeholder=k; si.value = p.stat[k] !== undefined ? p.stat[k] : '';
       si.style.padding='6px'; si.style.borderRadius='6px'; si.style.background='#071826'; si.style.border='none'; si.style.color='#fff';
-      si.addEventListener('input', ()=>{ const v = si.value; p.stat[k] = v; renderCanvas(); });
-      statsWrap.appendChild(si);
+      si.addEventListener('input', ()=>{ p.stat[k] = si.value; renderCanvas(); saveState(); });
+      statWrap.appendChild(si);
     });
 
-    // file input
-    const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*';
-    fileInp.style.marginTop='8px';
-    fileInp.addEventListener('change', (e)=>{
-      const f = e.target.files?.[0]; if(!f) return;
-      const reader = new FileReader();
-      reader.onload = ev => { players[idx].img = ev.target.result; renderPlayersControls(); renderCanvas(); }
-      reader.readAsDataURL(f);
-    });
+    // wire name/team change
+    nameInp.addEventListener('input', ()=>{ p.name = nameInp.value; renderCanvas(); saveState(); });
+    teamInp.addEventListener('input', ()=>{ p.team = teamInp.value; renderCanvas(); saveState(); });
+    flagSel.addEventListener('change', ()=>{ p.flag = flagSel.value; renderCanvas(); saveState(); });
 
-    // actions
-    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column'; actions.style.gap='6px';
-    const up = document.createElement('button'); up.textContent='↑'; up.className='small btn-outline';
-    const down = document.createElement('button'); down.textContent='↓'; down.className='small btn-outline';
-    const remove = document.createElement('button'); remove.textContent='Remove'; remove.className='small btn-outline';
-    up.addEventListener('click', ()=>{ if(idx>0){ [players[idx-1],players[idx]]=[players[idx],players[idx-1]]; renderPlayersControls(); renderCanvas(); }});
-    down.addEventListener('click', ()=>{ if(idx<players.length-1){ [players[idx+1],players[idx]]=[players[idx],players[idx+1]]; renderPlayersControls(); renderCanvas(); }});
-    remove.addEventListener('click', ()=>{ players.splice(idx,1); renderPlayersControls(); renderCanvas(); });
-    actions.appendChild(up); actions.appendChild(down); actions.appendChild(remove);
+    meta.appendChild(nameInp); meta.appendChild(teamInp); meta.appendChild(flagSel); meta.appendChild(scaleRow); meta.appendChild(statWrap); meta.appendChild(fileInp);
 
-    // wire inputs
-    nameInp.addEventListener('input', e=>{ players[idx].name = e.target.value; renderCanvas(); });
-    teamInp.addEventListener('input', e=>{ players[idx].team = e.target.value; renderCanvas(); });
-    flagInp.addEventListener('change', e=>{ players[idx].flag = e.target.value; renderCanvas(); });
-
-    meta.appendChild(nameInp); meta.appendChild(teamInp); meta.appendChild(flagInp); meta.appendChild(statsWrap); meta.appendChild(fileInp);
+    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column'; actions.style.gap='6px'; actions.style.marginLeft='6px';
+    actions.appendChild(lockBtn); actions.appendChild(dupBtn); actions.appendChild(delBtn);
 
     div.appendChild(thumb); div.appendChild(meta); div.appendChild(actions);
     playersCtrl.appendChild(div);
   });
 }
 
-/* ------------------------
-   Animate helper
-   ------------------------ */
-function animateNumber(el, target, duration=600){
+/* utility: create small noise base64 canvas data url */
+function createNoiseDataURL(detail=2){
+  const size = 64;
+  const c = document.createElement('canvas'); c.width=size; c.height=size;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(size,size);
+  for(let i=0;i<img.data.length;i+=4){
+    const v = Math.floor(Math.random()*255);
+    img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=Math.floor(25 + Math.random()*50);
+  }
+  ctx.putImageData(img,0,0);
+  return c.toDataURL('image/png');
+}
+
+/* animate number helper */
+function animateNumber(el, target, duration=700){
   const start = Number(el.textContent.replace(/\D/g,'')) || 0;
   const diff = target - start;
-  if(diff === 0){ el.textContent = target; return; }
-  const frames = Math.min(60, Math.max(12, Math.floor(duration/16)));
-  let frame = 0;
-  const id = setInterval(()=>{
-    frame++;
-    const val = Math.round(start + diff * (frame/frames));
-    el.textContent = val;
-    if(frame >= frames) clearInterval(id);
-  }, duration/frames);
+  if(diff===0){ el.textContent = target; return; }
+  const frames = Math.max(12, Math.min(60, Math.floor(duration/16)));
+  let f=0;
+  const id = setInterval(()=>{ f++; const v = Math.round(start + diff*(f/frames)); el.textContent = v; if(f>=frames) clearInterval(id); }, duration/frames);
 }
 
-/* ------------------------
-   Export function using html2canvas
-   ------------------------ */
+/* export */
 async function exportImage(){
-  // determine size
-  const preset = exportSize.value;
-  let width = capture.clientWidth;
-  let height = capture.clientHeight;
-  if(preset === '1080x1350'){ width=1080;height=1350; }
-  else if(preset === '1080x1920'){ width=1080;height=1920; }
-  else if(preset === '1920x1080'){ width=1920;height=1080; }
-  else { width = capture.clientWidth * 2; height = capture.clientHeight * 2; }
-
-  const type = exportType.value === 'jpg' ? 'image/jpeg' : 'image/png';
-  const scale = Math.max(1, Math.min(4, (width / capture.clientWidth)));
-
-  // temporarily set background to white for jpg if tricolor uses white text? we keep as-is
-  const canvas = await html2canvas(capture, {width: Math.round(capture.clientWidth), height: Math.round(capture.clientHeight), scale: scale, useCORS:true, backgroundColor: null});
-  // canvas is the captured size scaled
-  let finalCanvas = canvas;
-  // if requested size differs, draw scaled to new canvas
+  const type = document.getElementById('exportType').value;
+  const size = document.getElementById('exportSize').value;
+  let width = capture.clientWidth; let height = capture.clientHeight;
+  if(size!=='capture'){ [width,height] = size.split('x').map(Number); }
+  const scale = Number(document.getElementById('exportScale').value) || 1;
+  const transparent = document.getElementById('transparent').checked;
+  // capture with html2canvas
+  const canvas = await html2canvas(capture, {scale: scale, useCORS:true, backgroundColor: transparent?null:'#000'});
+  // if different size, scale to target
+  let final = canvas;
   if(canvas.width !== width || canvas.height !== height){
-    finalCanvas = document.createElement('canvas');
-    finalCanvas.width = width; finalCanvas.height = height;
-    const ctx = finalCanvas.getContext('2d');
-    // fill background for jpg when background is transparent? keep original bg.
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0,0,width,height);
+    final = document.createElement('canvas'); final.width=width; final.height=height;
+    const ctx = final.getContext('2d');
+    if(!transparent){ ctx.fillStyle='#000'; ctx.fillRect(0,0,width,height); }
     ctx.drawImage(canvas, 0, 0, width, height);
   }
-
-  const dataURL = finalCanvas.toDataURL(type, 0.92);
-  const a = document.createElement('a'); a.href = dataURL;
-  const ext = type === 'image/jpeg' ? 'jpg' : 'png';
-  a.download = `poster-${Date.now()}.${ext}`; a.click();
+  const dataURL = final.toDataURL(type==='jpg'?'image/jpeg':'image/png', 0.92);
+  const a = document.createElement('a'); a.href = dataURL; a.download = `poster_${Date.now()}.${type==='jpg'?'jpg':'png'}`; a.click();
 }
 
-/* ------------------------
-   Drag & drop global to add player
-   ------------------------ */
+/* Save/load JSON */
+function exportJSON(){
+  const data = { players, settings:{
+    bg: document.getElementById('bgSelect').value,
+    layout: document.getElementById('layoutSelect').value,
+    headline: document.getElementById('headlineText').value
+  }};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='poster_project.json'; a.click();
+}
+function importJSON(file){
+  const r = new FileReader();
+  r.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(data.players) players = data.players;
+      if(data.settings){
+        if(data.settings.bg) document.getElementById('bgSelect').value = data.settings.bg;
+        if(data.settings.layout) document.getElementById('layoutSelect').value = data.settings.layout;
+        if(data.settings.headline) document.getElementById('headlineText').value = data.settings.headline;
+      }
+      renderPlayersControls(); renderCanvas();
+    }catch(err){ alert('Invalid JSON'); }
+  };
+  r.readAsText(file);
+}
+
+/* global drop to add player */
 const globalDrop = document.getElementById('globalDrop');
 globalDrop.addEventListener('dragover', e=>{ e.preventDefault(); globalDrop.style.borderColor='var(--accent)'; });
 globalDrop.addEventListener('dragleave', e=>{ globalDrop.style.borderColor='rgba(255,255,255,0.03)'; });
 globalDrop.addEventListener('drop', e=>{
   e.preventDefault(); globalDrop.style.borderColor='rgba(255,255,255,0.03)';
   const f = e.dataTransfer.files?.[0]; if(!f || !f.type.startsWith('image/')) return;
-  const reader = new FileReader();
-  reader.onload = ev => { players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{},img:ev.target.result}); renderPlayersControls(); renderCanvas(); }
-  reader.readAsDataURL(f);
+  const r = new FileReader(); r.onload = ev => { players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{},img:ev.target.result,pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
 });
 
-/* ------------------------
-   UI bindings
-   ------------------------ */
-document.getElementById('addPlayer').addEventListener('click', ()=>{
-  players.push({name:'New Player', team:'Team', flag:'🇮🇳', stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0}, img:''});
-  renderPlayersControls(); renderCanvas();
+/* UI bindings */
+document.getElementById('addPlayer').addEventListener('click', ()=>{ players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); });
+document.getElementById('clearAll').addEventListener('click', ()=>{ if(confirm('Clear all players?')){ players=[]; renderPlayersControls(); renderCanvas(); saveState(); } });
+document.getElementById('resetDemo').addEventListener('click', ()=>{ localStorage.removeItem('ps_players'); location.reload(); });
+document.getElementById('exportBtn').addEventListener('click', exportImage);
+document.getElementById('exportJson').addEventListener('click', exportJSON);
+document.getElementById('jsonFile').addEventListener('change', e=> importJSON(e.target.files[0]));
+document.getElementById('importJsonBtn').addEventListener('click', ()=> document.getElementById('jsonFile').click());
+document.getElementById('saveTemplate').addEventListener('click', ()=> {
+  const name = prompt('Template name'); if(!name) return;
+  const list = JSON.parse(localStorage.getItem('ps_templates')||'[]'); list.push({name,players,meta:{bg:document.getElementById('bgSelect').value}}); localStorage.setItem('ps_templates', JSON.stringify(list)); alert('Saved template: '+name);
 });
-document.getElementById('clearAll').addEventListener('click', ()=>{
-  if(confirm('Clear all players?')){ players=[]; renderPlayersControls(); renderCanvas(); }
-});
-document.getElementById('resetDemo').addEventListener('click', ()=>{
-  players = [
-    {name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219,Sixes:12,SR:132.1,Avg:54.8,Innings:7,Matches:8,Economy:0}, img:''},
-    {name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198,Sixes:10,SR:129.6,Avg:39.6,Innings:5,Matches:6,Economy:0}, img:''},
-    {name:'Shahid Afridi', team:'Pakistan', flag:'🇵🇰', stat:{Runs:180,Sixes:9,SR:125.2,Avg:36.0,Innings:4,Matches:5,Economy:0}, img:''},
-    {name:'Jacques Kallis', team:'SA', flag:'🇿🇦', stat:{Runs:172,Sixes:8,SR:120.4,Avg:43.0,Innings:6,Matches:7,Economy:0}, img:''},
-    {name:'Aaron Finch', team:'Aus', flag:'🇦🇺', stat:{Runs:165,Sixes:7,SR:118.9,Avg:33.0,Innings:5,Matches:6,Economy:0}, img:''}
-  ];
-  renderPlayersControls(); renderCanvas();
-});
-exportBtn.addEventListener('click', exportImage);
-bgSelect.addEventListener('change', renderCanvas);
-layoutSelect.addEventListener('change', renderCanvas);
-headlineInput.addEventListener('input', renderCanvas);
-flagToggle.addEventListener('change', renderCanvas);
-exportType.addEventListener('change', ()=>{/* nothing required */});
-exportSize.addEventListener('change', ()=>{/* nothing required */});
 
-/* file-drop on player thumbnail handled in controls render */
+/* headline updates */
+document.getElementById('headlineText').addEventListener('input', renderCanvas);
+document.getElementById('headlineFontSize').addEventListener('input', ()=>{ document.getElementById('headlineText').style.fontSize = document.getElementById('headlineFontSize').value + 'px'; });
+document.getElementById('headlineColor').addEventListener('input', (e)=>{ document.getElementById('headlineText').style.color = e.target.value; });
+
+/* misc update triggers */
+['bgSelect','layoutSelect','headlineFont','vignette','grain','runsThreshold','sixesThreshold','flagToggle','headlineFontSize','headlineColor','accentColor'].forEach(id=>{
+  const el = document.getElementById(id); if(el) el.addEventListener('change', renderCanvas);
+});
+['vignette','grain','runsThreshold','sixesThreshold'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderCanvas); });
+
+/* preview frame toggles */
+document.getElementById('previewFrame').addEventListener('change', (e)=>{
+  const v = e.target.value;
+  if(v==='ig'){ capture.style.width='1080px'; capture.style.height='1350px'; }
+  else if(v==='yt'){ capture.style.width='1920px'; capture.style.height='1080px'; }
+  else if(v==='short'){ capture.style.width='1080px'; capture.style.height='1920px'; }
+  else { capture.style.width='1080px'; capture.style.height='1350px'; }
+});
+
+/* autosave on unload */
+window.addEventListener('beforeunload', () => saveState());
 
 /* initial render */
-renderPlayersControls();
-renderCanvas();
+renderPlayersControls(); renderCanvas();
+
+/* small utility to toggle guides (not implemented heavy) */
+document.getElementById('togglePreview').addEventListener('click', ()=> {
+  capture.classList.toggle('show-guides');
+});
+
+/* expose some helpers for debugging */
+window.PS = { players, renderCanvas, renderPlayersControls, exportImage, exportJSON, importJSON };
+
 </script>
 </body>
 </html>

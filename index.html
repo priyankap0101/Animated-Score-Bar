@@ -1,65 +1,567 @@
-<!-- Computeverse Power-Pack: Index + Shared Assets -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Computeverse — Template Power Pack (Index)</title>
+<title>Poster Studio — PRO (Full Color)</title>
+<!-- html2canvas for export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#071026; --panel:#0d1724; --muted:#b8c7d6; --accent:#00d4ff; --accent2:#ff5c7a; }
-  html,body{height:100%;margin:0;font-family:Inter, Poppins, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:linear-gradient(180deg,#081029 0%, #041425 100%);color:#fff}
-  .wrap{max-width:1100px;margin:24px auto;padding:20px}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
-  h1{margin:0 0 6px 0;font-size:22px}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
-  a.tlink{display:block;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,0.03)}
-  .note{color:var(--muted);font-size:13px;margin-top:10px}
+  :root{
+    --ui-bg:linear-gradient(180deg,#0f1720,#081018);
+    --panel:#0b1220;
+    --accent1:#ff7a00; /* orange */
+    --accent2:#0088ff; /* blue */
+    --muted:#9fb0c6;
+    --card-radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;padding:14px;background:var(--ui-bg);font-family:Inter,Arial,sans-serif;color:#fff;
+    display:flex;gap:14px;min-height:100vh;
+  }
+
+  /* LEFT: templates */
+  .left{
+    width:220px;background:linear-gradient(180deg,#091426,#07121a);border-radius:12px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,0.6);
+  }
+  .left h4{margin:6px 0;color:var(--accent1);font-family:'Bebas Neue',sans-serif}
+  .preset{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .preset button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .preset button:hover{border-color:rgba(255,255,255,0.08);color:#fff}
+
+  /* CENTER: canvas */
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px}
+  .preview-controls{width:1080px;display:flex;gap:10px;justify-content:flex-end;align-items:center}
+  .capture{
+    width:1080px;height:1350px;border-radius:12px;padding:28px;background:linear-gradient(180deg,#071026,#08122a);
+    position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  }
+
+  /* headline styling inside canvas */
+  .headline{
+    display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;
+  }
+  .headline .text{ font-family:'Bebas Neue',sans-serif; font-size:52px; color:var(--accent2); letter-spacing:1px; text-shadow:0 6px 20px rgba(0,136,255,0.06)}
+  .brand{ position:absolute; left:18px; bottom:14px; color:rgba(255,255,255,0.12); font-weight:700}
+
+  /* layout variations */
+  .layout-single{display:flex;gap:18px;align-items:center;height:calc(100% - 120px);}
+  .single-left{width:56%;height:100%;border-radius:12px;overflow:hidden;position:relative;background:#071424}
+  .img-frame{position:absolute;inset:0;overflow:hidden}
+  .img-frame img{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);user-select:none;pointer-events:none}
+  .single-right{flex:1;padding:16px;display:flex;flex-direction:column;justify-content:center;gap:12px}
+
+  .layout-list{display:flex;flex-direction:column;gap:12px;max-height:calc(100% - 120px);overflow:auto;padding-right:6px}
+  .player-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03)}
+  .player-thumb{width:140px;height:140px;border-radius:10px;object-fit:cover;border:3px solid rgba(255,255,255,0.03)}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+  .stat-pill{padding:8px 10px;background:rgba(0,0,0,0.35);border-radius:8px;font-weight:700;font-size:14px;text-align:center}
+
+  /* RIGHT: control panel */
+  .right{width:420px;background:linear-gradient(180deg,#081426,#06121a);border-radius:12px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,0.6);overflow:auto;max-height:96vh}
+  .right h3{margin:6px 0;color:var(--accent1);font-family:'Bebas Neue',sans-serif}
+  label{display:block;color:var(--muted);margin-top:10px;font-weight:600;font-size:13px}
+  input[type="text"],input[type="number"],select,textarea{width:100%;padding:10px;border-radius:8px;border:none;background:#071827;color:#fff;margin-top:8px}
+  .btn{cursor:pointer;border:none;border-radius:10px;padding:10px 12px;font-weight:700}
+  .btn-primary{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#05121a}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  .players-ctrl{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+
+  .player-ctrl{display:flex;gap:10px;align-items:flex-start;padding:10px;background:rgba(255,255,255,0.02);border-radius:10px}
+  .player-ctrl img{width:68px;height:68px;border-radius:8px;object-fit:cover}
+  .player-ctrl .meta{flex:1}
+  .player-actions{display:flex;flex-direction:column;gap:6px;margin-left:6px}
+
+  .drop-hint{border:2px dashed rgba(255,255,255,0.03);padding:10px;border-radius:8px;text-align:center;color:var(--muted);margin-top:10px}
+
+  .small{font-size:13px;padding:8px 10px}
+
+  /* responsive */
+  @media(max-width:1180){ .left{display:none} .right{width:320px} .capture{width:900px;height:1200px} }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Computeverse — Template Power Pack (20 Templates)</h1>
-      <div class="note">You chose a mixed pack: 10 Cricket + 10 Universal templates, with <strong>all</strong> visual styles enabled (glass, neon, gradients, minimal, photo-heavy, poster, square, vertical, dark, stats-focused). Each template is a separate HTML file you can open, edit, and export as PNG (no watermark).</div>
 
-      <div style="height:12px"></div>
-      <div style="font-weight:800;margin-bottom:8px">Included templates (first 6 files generated here):</div>
-      <div class="grid">
-        <a class="tlink" href="most-sixes.html">1. Most Sixes (Cricket)</a>
-        <a class="tlink" href="probable-xi.html">2. Probable XI (Cricket)</a>
-        <a class="tlink" href="bowling-performance.html">3. Bowling Performance (Cricket)</a>
-        <a class="tlink" href="auction-base-price.html">4. Auction Base Price (Cricket)</a>
-        <a class="tlink" href="potm-awards.html">5. POTM Awards (Cricket)</a>
-        <a class="tlink" href="simple-stat-card.html">6. Simple Stat Card (Cricket)</a>
-      </div>
-
-      <div style="height:12px"></div>
-      <div style="font-weight:800;margin-bottom:8px">Universal templates (will be generated next):</div>
-      <div class="grid" style="grid-template-columns:repeat(4,1fr)">
-        <a class="tlink" href="quote-card.html">7. Quote / Statement</a>
-        <a class="tlink" href="versus-card.html">8. Versus Comparison</a>
-        <a class="tlink" href="match-preview.html">9. Match Preview / Event</a>
-        <a class="tlink" href="infographic-number.html">10. Infographic / Number Focus</a>
-        <a class="tlink" href="photo-spotlight.html">11. Photo Spotlight</a>
-        <a class="tlink" href="team-banner.html">12. Team Banner</a>
-        <a class="tlink" href="countdown-poster.html">13. Countdown Poster</a>
-        <a class="tlink" href="social-thumbnail.html">14. Social Thumbnail (YT)</a>
-        <a class="tlink" href="stat-comparison.html">15. Stat Comparison</a>
-        <a class="tlink" href="vertical-poster.html">16. Vertical Poster (Reel)</a>
-      </div>
-
-      <div style="height:12px"></div>
-      <div class="note">How to use: download this folder and open <code>index.html</code> locally. Each template file is self-contained and includes an editor (fields + image upload + color/theme controls) and a <strong>Download PNG</strong> button that exports a high-resolution image using <code>html2canvas</code>. Files are offline-capable.</div>
-
-      <div style="height:12px"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <a class="tlink" href="https://example.com/readme" target="_blank">Docs / Readme (placeholder)</a>
-        <a class="tlink" href="most-sixes.html">Open Template 1</a>
-      </div>
-
-    </div>
+<!-- LEFT: Templates -->
+<div class="left">
+  <h4>Templates</h4>
+  <div class="preset">
+    <button data-preset="most-sixes">Most Sixes (Hero)</button>
+    <button data-preset="top-runs">Top Runs (List)</button>
+    <button data-preset="motm">Man of The Match</button>
+    <button id="loadSaved">Load Saved</button>
   </div>
+
+  <h4 style="margin-top:14px">Saved Templates</h4>
+  <div id="savedList" style="display:flex;flex-direction:column;gap:8px;margin-top:6px"></div>
+</div>
+
+<!-- CENTER: Live Canvas -->
+<div class="center">
+  <div class="preview-controls">
+    <select id="previewFrame" title="Preview frame" class="small">
+      <option value="studio">Studio</option>
+      <option value="ig">IG 1080×1350</option>
+      <option value="yt">YouTube 1920×1080</option>
+      <option value="short">Short 1080×1920</option>
+    </select>
+    <button id="toggleGuides" class="btn btn-ghost small">Toggle Guides</button>
+  </div>
+
+  <div id="capture" class="capture bg-darkneon">
+    <div class="headline" id="headlineWrap">
+      <div class="text" id="headlineTextPreview">MOST SIXES</div>
+    </div>
+
+    <div id="templateArea" style="height:calc(100% - 120px)"></div>
+
+    <div class="brand">YourBrand • Cricket</div>
+  </div>
+</div>
+
+<!-- RIGHT: Controls -->
+<div class="right">
+  <h3>Poster Studio — Full Color</h3>
+
+  <label>Headline</label>
+  <input id="headlineText" type="text" value="MOST SIXES">
+
+  <label>Headline Color</label>
+  <input id="headlineColor" type="color" value="#0088ff">
+
+  <label>Accent Color</label>
+  <input id="accentColor" type="color" value="#ff7a00">
+
+  <label>Background</label>
+  <select id="bgSelect">
+    <option value="bg-stadium">Stadium Glow</option>
+    <option value="bg-darkneon" selected>Dark Neon</option>
+    <option value="bg-tricolor">Tricolor</option>
+    <option value="bg-fire">Fire</option>
+    <option value="bg-blur">Gradient Blur</option>
+    <option value="bg-all">Mixed</option>
+  </select>
+
+  <label>Layout</label>
+  <select id="layoutSelect">
+    <option value="single">Single Player</option>
+    <option value="dual">Dual Player</option>
+    <option value="three">Three Players</option>
+    <option value="five">Five Players</option>
+  </select>
+
+  <label>Effects</label>
+  <div style="display:flex;gap:8px">
+    <label style="flex:1">Vignette <input id="vignette" type="range" min="0" max="1" step="0.05" value="0.35"></label>
+    <label style="flex:1">Grain <input id="grain" type="range" min="0" max="1" step="0.05" value="0.07"></label>
+  </div>
+
+  <label>Smart Highlight Thresholds</label>
+  <div style="display:flex;gap:8px">
+    <input id="runsThreshold" type="number" value="200" placeholder="Runs" style="flex:1">
+    <input id="sixesThreshold" type="number" value="10" placeholder="Sixes" style="flex:1">
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button id="addPlayer" class="btn btn-primary">+ Add Player</button>
+    <button id="exportBtn" class="btn btn-ghost">Export</button>
+  </div>
+
+  <div class="drop-hint" id="globalDrop">Drag image here to add player</div>
+
+  <div class="players-ctrl" id="playersCtrl"></div>
+
+  <hr style="border:none;border-top:1px solid rgba(255,255,255,0.04);margin:12px 0">
+
+  <label>Export Options</label>
+  <div style="display:flex;gap:8px">
+    <select id="exportType"><option value="png">PNG</option><option value="jpg">JPG</option></select>
+    <select id="exportSize"><option value="1080x1350">1080×1350</option><option value="1080x1920">1080×1920</option><option value="1920x1080">1920×1080</option><option value="capture">Current</option></select>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+    <label style="flex:1">Scale <input id="exportScale" type="range" min="1" max="3" step="0.1" value="1"></label>
+    <label style="display:flex;align-items:center;gap:6px"><input id="transparent" type="checkbox">Transparent</label>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button id="exportJson" class="btn btn-ghost small">Export JSON</button>
+    <button id="importJsonBtn" class="btn btn-ghost small">Import JSON</button>
+    <input id="jsonFile" type="file" accept=".json" style="display:none">
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button id="saveTemplateBtn" class="btn btn-primary small">Save Template</button>
+    <button id="loadTemplateBtn" class="btn btn-ghost small">Load Template</button>
+  </div>
+
+  <div style="margin-top:10px;color:var(--muted);font-size:13px">Autosave enabled — your work is stored in the browser.</div>
+</div>
+
+<script>
+/* ---------------------------
+   Poster Studio PRO - FULL COLOR
+   Single-file, full layout
+   --------------------------- */
+
+/* ---------- State ---------- */
+let players = JSON.parse(localStorage.getItem('ps_players')) || [
+  {name:'Rohit Sharma',team:'India',flag:'🇮🇳',stat:{Runs:219,Sixes:12,SR:132.1,Avg:54.8,Innings:7,Matches:8,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false},
+  {name:'Chris Gayle',team:'West Indies',flag:'🇻🇮',stat:{Runs:198,Sixes:10,SR:129.6,Avg:39.6,Innings:5,Matches:6,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}
+];
+
+const capture = document.getElementById('capture');
+const templateArea = document.getElementById('templateArea');
+const playersCtrl = document.getElementById('playersCtrl');
+
+/* ---------- Helpers ---------- */
+function saveState(){ localStorage.setItem('ps_players', JSON.stringify(players)); }
+function clearEl(e){ while(e.firstChild) e.removeChild(e.firstChild); }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+
+/* create noise data URL (for grain overlay) */
+function createNoiseDataURL(detail=1){
+  const size = 64 + Math.round(detail*32);
+  const c = document.createElement('canvas'); c.width=size; c.height=size;
+  const ctx = c.getContext('2d'); const img = ctx.createImageData(size,size);
+  for(let i=0;i<img.data.length;i+=4){ const v=Math.floor(Math.random()*255); img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=Math.floor(10+Math.random()*40); }
+  ctx.putImageData(img,0,0); return c.toDataURL('image/png');
+}
+
+/* ---------- Rendering Canvas ---------- */
+function renderCanvas(){
+  // headline
+  const headline = document.getElementById('headlineText').value || 'MOST SIXES';
+  const headlineColor = document.getElementById('headlineColor').value || '#0088ff';
+  document.getElementById('headlineTextPreview').textContent = headline;
+  document.getElementById('headlineTextPreview').style.color = headlineColor;
+
+  // accent color apply
+  const accent = document.getElementById('accentColor').value || '#ff7a00';
+  document.documentElement.style.setProperty('--accent1', accent);
+
+  // background class
+  const bg = document.getElementById('bgSelect').value || 'bg-darkneon';
+  capture.className = 'capture ' + bg;
+
+  // effects
+  const vign = parseFloat(document.getElementById('vignette').value || 0.35);
+  const grain = parseFloat(document.getElementById('grain').value || 0.07);
+  const effects = [];
+  // vignette element
+  const vx = document.createElement('div'); vx.style.position='absolute'; vx.style.inset='0';
+  vx.style.background = `radial-gradient(ellipse at center, rgba(0,0,0,${vign*0.25}) 0%, rgba(0,0,0,${vign}) 70%)`; vx.style.pointerEvents='none';
+  effects.push(vx);
+  if(grain>0){
+    const gx = document.createElement('div'); gx.style.position='absolute'; gx.style.inset='0';
+    gx.style.backgroundImage = `url(${createNoiseDataURL(grain*2)})`; gx.style.opacity = Math.min(0.6, grain); gx.style.mixBlendMode='overlay'; gx.style.pointerEvents='none';
+    effects.push(gx);
+  }
+  // clear any previous overlay
+  const overlay = document.getElementById('effectsOverlay'); overlay.innerHTML='';
+  effects.forEach(n=>overlay.appendChild(n));
+
+  // layout
+  const layout = document.getElementById('layoutSelect').value || 'single';
+  clearEl(templateArea);
+
+  const runsT = Number(document.getElementById('runsThreshold').value || 200);
+  const sixesT = Number(document.getElementById('sixesThreshold').value || 10);
+  const showFlags = true;
+
+  if(layout === 'single'){
+    const p = players[0] || {name:'Player',team:'Team',flag:'',stat:{},img:'',pos:{x:50,y:50,scale:1}};
+    const container = document.createElement('div'); container.className='layout-single';
+
+    const left = document.createElement('div'); left.className='single-left';
+    const frame = document.createElement('div'); frame.className='img-frame';
+    const img = document.createElement('img'); img.src = p.img || ''; img.alt = p.name;
+    // position + scale applied via transform
+    img.style.transform = `translate(-50%,-50%) translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
+    img.style.maxWidth='none'; img.style.minWidth='100%'; img.style.minHeight='100%';
+    frame.appendChild(img);
+    left.appendChild(frame);
+
+    // right block
+    const right = document.createElement('div'); right.className='single-right';
+    const nameDiv = document.createElement('div'); nameDiv.className='name-large'; nameDiv.textContent = (showFlags && p.flag ? p.flag+' ':'') + p.name;
+    const teamDiv = document.createElement('div'); teamDiv.className='team-small'; teamDiv.textContent = p.team;
+    const statBig = document.createElement('div'); statBig.className='stat-big'; statBig.textContent = p.stat.Runs || 0;
+
+    const statsGrid = document.createElement('div'); statsGrid.className='stats-grid';
+    ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'].forEach(k=>{
+      const pill = document.createElement('div'); pill.className='stat-pill';
+      const val = (p.stat[k]!==undefined) ? p.stat[k] : '';
+      pill.innerHTML = `<div style="font-size:12px;color:${'#9fb0c6'}">${k}</div><div style="font-size:16px">${val}</div>`;
+      if(k==='Runs' && Number(val) >= runsT) pill.style.background = `linear-gradient(90deg,#ffd966,#f7c948)`;
+      if(k==='Sixes' && Number(val) >= sixesT) pill.style.background = `linear-gradient(90deg,#ff9b5c,#ff6b3a)`;
+      statsGrid.appendChild(pill);
+    });
+
+    right.appendChild(nameDiv); right.appendChild(teamDiv); right.appendChild(statBig); right.appendChild(statsGrid);
+    container.appendChild(left); container.appendChild(right);
+    templateArea.appendChild(container);
+
+    // attach drag-to-position if image exists and not locked
+    if(!p.locked) attachImageDrag(frame.querySelector('img'), p);
+    animateNumber(statBig, Number(p.stat.Runs||0), 800);
+  } else {
+    // list layout
+    const list = document.createElement('div'); list.className='layout-list';
+    let count = 3; if(layout==='dual') count=2; if(layout==='three') count=3; if(layout==='five') count=Math.min(5,players.length||5);
+    const show = players.slice(0,count);
+    show.forEach(p=>{
+      const card = document.createElement('div'); card.className='player-card';
+      const thumbFrame = document.createElement('div'); thumbFrame.style.width='140px'; thumbFrame.style.height='140px'; thumbFrame.style.overflow='hidden'; thumbFrame.style.borderRadius='10px';
+      const thumb = document.createElement('img'); thumb.className='player-thumb'; thumb.src = p.img || ''; thumb.style.transform = `translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
+      thumb.style.minWidth='100%'; thumb.style.minHeight='100%';
+      if(!p.locked) attachImageDrag(thumb,p);
+      thumbFrame.appendChild(thumb);
+
+      const info = document.createElement('div'); info.style.flex='1';
+      const name = document.createElement('div'); name.style.fontWeight=800; name.style.fontSize='20px'; name.textContent = (showFlags && p.flag ? p.flag+' ':'') + p.name;
+      const team = document.createElement('div'); team.style.color='#9fb0c6'; team.style.marginTop='6px'; team.textContent = p.team;
+      const statRow = document.createElement('div'); statRow.className='stats-grid';
+      ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'].forEach(k=>{
+        const pill=document.createElement('div'); pill.className='stat-pill';
+        const val = p.stat[k] !== undefined ? p.stat[k] : '';
+        pill.innerHTML = `<div style="font-size:12px;color:${'#9fb0c6'}">${k}</div><div style="font-size:14px">${val}</div>`;
+        if(k==='Runs' && Number(val)>=runsT) pill.style.background='linear-gradient(90deg,#ffd966,#f7c948)';
+        if(k==='Sixes' && Number(val)>=sixesT) pill.style.background='linear-gradient(90deg,#ff9b5c,#ff6b3a)';
+        statRow.appendChild(pill);
+      });
+      info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
+      card.appendChild(thumbFrame); card.appendChild(info);
+      list.appendChild(card);
+    });
+    templateArea.appendChild(list);
+  }
+
+  saveState();
+}
+
+/* ---------- Image drag to reposition inside frame ---------- */
+function attachImageDrag(imgEl, player){
+  if(!imgEl) return;
+  let dragging=false, startX=0, startY=0, startPX=player.pos.x, startPY=player.pos.y;
+  imgEl.style.cursor='grab';
+  const onDown = (e) => {
+    if(player.locked) return;
+    dragging=true; imgEl.setPointerCapture(e.pointerId); startX=e.clientX; startY=e.clientY; startPX=player.pos.x; startPY=player.pos.y;
+  };
+  const onMove = (e) => {
+    if(!dragging) return;
+    const rect = imgEl.parentElement.getBoundingClientRect();
+    const dx = (e.clientX - startX)/rect.width * 100;
+    const dy = (e.clientY - startY)/rect.height * 100;
+    player.pos.x = clamp(startPX + dx, -200, 300);
+    player.pos.y = clamp(startPY + dy, -200, 300);
+    imgEl.style.transform = `translate(-50%,-50%) translate(${player.pos.x-50}%,${player.pos.y-50}%) scale(${player.pos.scale})`;
+  };
+  const onUp = (e) => { dragging=false; try{ imgEl.releasePointerCapture(e.pointerId);}catch(_){}; saveState(); };
+  imgEl.addEventListener('pointerdown', onDown);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+}
+
+/* ---------- Players control panel ---------- */
+function renderPlayersControls(){
+  clearEl(playersCtrl);
+  players.forEach((p,idx)=>{
+    const row = document.createElement('div'); row.className='player-ctrl'; row.draggable=true;
+    row.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', idx); row.style.opacity='0.5'; });
+    row.addEventListener('dragend', ()=>{ row.style.opacity='1'; });
+    row.addEventListener('drop', e=>{ e.preventDefault(); const from=Number(e.dataTransfer.getData('text/plain')); if(!Number.isNaN(from)){ const it=players.splice(from,1)[0]; players.splice(idx,0,it); renderPlayersControls(); renderCanvas(); }});
+    row.addEventListener('dragover', e=>e.preventDefault());
+
+    const thumb = document.createElement('img'); thumb.src = p.img || ''; thumb.alt='thumb';
+    const meta = document.createElement('div'); meta.className='meta';
+    const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.value=p.name; nameInp.placeholder='Player name';
+    const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value=p.team; teamInp.placeholder='Team';
+    const flagSel = document.createElement('select'); ['🇮🇳','🇵🇰','🇦🇺','🇿🇦','🇬🇧','🇳🇿','🇱🇰','🇧🇩','🇺🇸','🇯🇵','🇻🇮'].forEach(f=>{ const o=document.createElement('option'); o.value=f; o.innerText=f; if(p.flag===f) o.selected=true; flagSel.appendChild(o); });
+
+    const scaleRow = document.createElement('div'); scaleRow.style.display='flex'; scaleRow.style.gap='6px'; scaleRow.style.marginTop='6px';
+    const scaleInp = document.createElement('input'); scaleInp.type='range'; scaleInp.min=0.5; scaleInp.max=2; scaleInp.step=0.01; scaleInp.value = p.pos.scale || 1;
+    scaleInp.addEventListener('input', ()=>{ p.pos.scale = Number(scaleInp.value); renderCanvas(); saveState(); });
+    scaleRow.appendChild(document.createElement('div')); scaleRow.appendChild(scaleInp);
+
+    const lockBtn = document.createElement('button'); lockBtn.className='btn btn-ghost small'; lockBtn.textContent = p.locked ? 'Unlock' : 'Lock';
+    lockBtn.addEventListener('click', ()=>{ p.locked = !p.locked; lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; renderPlayersControls(); });
+
+    const dupBtn = document.createElement('button'); dupBtn.className='btn btn-ghost small'; dupBtn.textContent='Duplicate';
+    dupBtn.addEventListener('click', ()=>{ const copy = JSON.parse(JSON.stringify(p)); players.push(copy); renderPlayersControls(); renderCanvas(); saveState(); });
+
+    const delBtn = document.createElement('button'); delBtn.className='btn btn-ghost small'; delBtn.textContent='Delete';
+    delBtn.addEventListener('click', ()=>{ if(confirm('Delete player?')){ players.splice(idx,1); renderPlayersControls(); renderCanvas(); saveState(); }});
+
+    const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*';
+    fileInp.addEventListener('change', (e)=>{ const f=e.target.files?.[0]; if(!f) return; const r=new FileReader(); r.onload = ev=>{ p.img = ev.target.result; renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f); });
+
+    // stats inputs
+    const keys = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+    const statWrap = document.createElement('div'); statWrap.style.display='grid'; statWrap.style.gridTemplateColumns='repeat(4,1fr)'; statWrap.style.gap='6px'; statWrap.style.marginTop='8px';
+    keys.forEach(k=>{
+      const si = document.createElement('input'); si.type='text'; si.placeholder=k; si.value = p.stat[k] !== undefined ? p.stat[k] : '';
+      si.style.padding='6px'; si.style.borderRadius='6px'; si.style.border='none'; si.style.background='#071826'; si.style.color='#fff';
+      si.addEventListener('input', ()=>{ p.stat[k] = si.value; renderCanvas(); saveState(); });
+      statWrap.appendChild(si);
+    });
+
+    nameInp.addEventListener('input', ()=>{ p.name = nameInp.value; renderCanvas(); saveState(); });
+    teamInp.addEventListener('input', ()=>{ p.team = teamInp.value; renderCanvas(); saveState(); });
+    flagSel.addEventListener('change', ()=>{ p.flag = flagSel.value; renderCanvas(); saveState(); });
+
+    meta.appendChild(nameInp); meta.appendChild(teamInp); meta.appendChild(flagSel); meta.appendChild(scaleRow); meta.appendChild(statWrap); meta.appendChild(fileInp);
+
+    const actions = document.createElement('div'); actions.className='player-actions';
+    actions.appendChild(lockBtn); actions.appendChild(dupBtn); actions.appendChild(delBtn);
+
+    row.appendChild(thumb); row.appendChild(meta); row.appendChild(actions);
+    playersCtrl.appendChild(row);
+  });
+}
+
+/* ---------- animate number ---------- */
+function animateNumber(el, target, duration=700){
+  const start = Number(el.textContent.replace(/\D/g,'')) || 0;
+  const diff = target - start; if(diff===0){ el.textContent = target; return; }
+  const steps = Math.max(12, Math.min(60, Math.floor(duration/16))); let i=0;
+  const id = setInterval(()=>{ i++; el.textContent = Math.round(start + diff*(i/steps)); if(i>=steps) clearInterval(id); }, duration/steps);
+}
+
+/* ---------- Export (html2canvas) ---------- */
+async function doExport(){
+  const type = document.getElementById('exportType').value || 'png';
+  const size = document.getElementById('exportSize').value || '1080x1350';
+  let [w,h] = [capture.clientWidth, capture.clientHeight];
+  if(size !== 'capture'){ [w,h] = size.split('x').map(Number); }
+  const scale = Number(document.getElementById('exportScale').value) || 1;
+  const transparent = document.getElementById('transparent').checked;
+
+  // capture
+  const canvas = await html2canvas(capture, {scale: scale, useCORS:true, backgroundColor: transparent?null:'#000'});
+  // resize if needed
+  let final = canvas;
+  if(canvas.width !== w || canvas.height !== h){
+    final = document.createElement('canvas'); final.width = w; final.height = h;
+    const ctx = final.getContext('2d');
+    if(!transparent) { ctx.fillStyle = '#000'; ctx.fillRect(0,0,w,h); }
+    ctx.drawImage(canvas, 0, 0, w, h);
+  }
+  const mime = type==='jpg'?'image/jpeg':'image/png';
+  const data = final.toDataURL(mime, 0.92);
+  const a = document.createElement('a'); a.href = data; a.download = `poster_${Date.now()}.${type==='jpg'?'jpg':'png'}`; a.click();
+}
+
+/* ---------- JSON Export/Import ---------- */
+function exportJSON(){
+  const data = { players, settings:{
+    bg: document.getElementById('bgSelect').value,
+    layout: document.getElementById('layoutSelect').value,
+    headline: document.getElementById('headlineText').value
+  }};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'poster_project.json'; a.click();
+}
+function importJSON(file){
+  const r = new FileReader();
+  r.onload = e => {
+    try{
+      const d = JSON.parse(e.target.result);
+      if(d.players) players = d.players;
+      if(d.settings){
+        if(d.settings.bg) document.getElementById('bgSelect').value = d.settings.bg;
+        if(d.settings.layout) document.getElementById('layoutSelect').value = d.settings.layout;
+        if(d.settings.headline) document.getElementById('headlineText').value = d.settings.headline;
+      }
+      renderPlayersControls(); renderCanvas(); saveState();
+    }catch(err){ alert('Invalid JSON'); }
+  };
+  r.readAsText(file);
+}
+
+/* ---------- Templates & Presets ---------- */
+document.querySelectorAll('.preset button[data-preset]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const p = btn.getAttribute('data-preset');
+    if(p==='most-sixes'){
+      document.getElementById('bgSelect').value='bg-darkneon'; document.getElementById('layoutSelect').value='single';
+      players = [{name:'Top Hitter',team:'Team',flag:'🇮🇳',stat:{Runs:210,Sixes:14,SR:140,Avg:52,Innings:6,Matches:7,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}];
+    } else if(p==='top-runs'){
+      document.getElementById('bgSelect').value='bg-blur'; document.getElementById('layoutSelect').value='three';
+      players = [
+        {name:'Player A',team:'Team A',flag:'🇦🇺',stat:{Runs:520,Sixes:20,SR:150,Avg:65,Innings:9,Matches:10,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false},
+        {name:'Player B',team:'Team B',flag:'🇬🇧',stat:{Runs:470,Sixes:16,SR:140,Avg:58,Innings:8,Matches:9,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false},
+        {name:'Player C',team:'Team C',flag:'🇿🇦',stat:{Runs:430,Sixes:12,SR:138,Avg:54,Innings:7,Matches:8,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}
+      ];
+    } else if(p==='motm'){
+      document.getElementById('bgSelect').value='bg-fire'; document.getElementById('layoutSelect').value='single';
+      players = [{name:'Man of the Match',team:'Team',flag:'🇮🇳',stat:{Runs:104,Sixes:6,SR:172.1,Avg:104,Innings:1,Matches:1,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}];
+    }
+    renderPlayersControls(); renderCanvas(); saveState();
+  });
+});
+
+/* ---------- Global drag-drop add player ---------- */
+const globalDrop = document.getElementById('globalDrop');
+globalDrop.addEventListener('dragover', e=>{ e.preventDefault(); globalDrop.style.borderColor='var(--accent2)'; });
+globalDrop.addEventListener('dragleave', e=>{ globalDrop.style.borderColor='rgba(255,255,255,0.03)'; });
+globalDrop.addEventListener('drop', e=>{
+  e.preventDefault(); globalDrop.style.borderColor='rgba(255,255,255,0.03)';
+  const f = e.dataTransfer.files?.[0]; if(!f || !f.type.startsWith('image/')) return;
+  const r = new FileReader(); r.onload = ev => { players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{},img:ev.target.result,pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
+});
+
+/* ---------- Main UI bindings ---------- */
+document.getElementById('addPlayer').addEventListener('click', ()=>{ players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); });
+document.getElementById('exportBtn').addEventListener('click', doExport);
+document.getElementById('exportJson').addEventListener('click', exportJSON);
+document.getElementById('importJsonBtn').addEventListener('click', ()=>document.getElementById('jsonFile').click());
+document.getElementById('jsonFile').addEventListener('change', e=>importJSON(e.target.files[0]));
+document.getElementById('saveTemplateBtn').addEventListener('click', ()=>{
+  const name = prompt('Template name'); if(!name) return;
+  const list = JSON.parse(localStorage.getItem('ps_templates')||'[]'); list.push({name,players,meta:{bg:document.getElementById('bgSelect').value}}); localStorage.setItem('ps_templates', JSON.stringify(list)); alert('Saved template: '+name); renderSavedList();
+});
+document.getElementById('loadTemplateBtn').addEventListener('click', ()=>{ renderSavedList(); alert('Saved templates shown on left'); });
+
+document.getElementById('headlineText').addEventListener('input', renderCanvas);
+document.getElementById('headlineColor').addEventListener('input', renderCanvas);
+document.getElementById('accentColor').addEventListener('input', e=>{ document.documentElement.style.setProperty('--accent1', e.target.value); renderCanvas(); });
+
+['bgSelect','layoutSelect','vignette','grain','runsThreshold','sixesThreshold'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderCanvas); });
+
+document.getElementById('previewFrame').addEventListener('change', (e)=>{
+  const v = e.target.value;
+  if(v==='ig'){ capture.style.width='1080px'; capture.style.height='1350px'; }
+  else if(v==='yt'){ capture.style.width='1920px'; capture.style.height='1080px'; }
+  else if(v==='short'){ capture.style.width='1080px'; capture.style.height='1920px'; }
+  else { capture.style.width='1080px'; capture.style.height='1350px'; }
+});
+
+document.getElementById('toggleGuides').addEventListener('click', ()=>{ capture.classList.toggle('show-guides'); });
+
+/* saved templates list */
+function renderSavedList(){
+  const box = document.getElementById('savedList'); clearEl(box);
+  const list = JSON.parse(localStorage.getItem('ps_templates')||'[]');
+  list.forEach((t, i)=>{
+    const b = document.createElement('button'); b.textContent = t.name; b.className='';
+    b.addEventListener('click', ()=>{ players = t.players; if(t.meta && t.meta.bg) document.getElementById('bgSelect').value = t.meta.bg; renderPlayersControls(); renderCanvas(); });
+    const del = document.createElement('button'); del.textContent='✕'; del.style.marginLeft='6px'; del.className='btn btn-ghost small';
+    del.addEventListener('click', ()=>{ if(confirm('Delete saved template?')){ list.splice(i,1); localStorage.setItem('ps_templates', JSON.stringify(list)); renderSavedList(); }});
+    const wrap = document.createElement('div'); wrap.style.display='flex'; wrap.style.gap='6px';
+    wrap.appendChild(b); wrap.appendChild(del); box.appendChild(wrap);
+  });
+}
+
+/* ---------- Autosave / initial render ---------- */
+window.addEventListener('beforeunload', saveState);
+renderPlayersControls(); renderCanvas(); renderSavedList();
+
+/* expose for dev */
+window.PS = { players, renderCanvas, renderPlayersControls, exportJSON, importJSON, doExport };
+</script>
 </body>
 </html>
-
-<!-- Note: Next steps: I will generate each template file (20 total) as separate HTML files. Open the index above to navigate. -->
