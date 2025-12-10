@@ -3,107 +3,62 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Poster Studio — Pro (All Features)</title>
-<!-- html2canvas for export -->
+<title>Poster Studio — Pro (All Features) - Fixed</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#071026; --panel:#071427; --accent:#00eaff; --muted:#9fb0c6; --gold:#f7c948;
-    --card-radius:12px;
-  }
+  :root{ --bg:#071026; --panel:#071427; --accent:#00eaff; --muted:#9fb0c6; --gold:#f7c948; --card-radius:12px; }
   *{box-sizing:border-box}
-  body{
-    margin:0;padding:16px;background:linear-gradient(180deg,#020318 0%,#071026 100%);
-    font-family:Inter,system-ui,Arial;color:#fff;display:flex;gap:14px;min-height:100vh;
-  }
-
-  /* LEFT: Studio Canvas */
+  body{ margin:0;padding:16px;background:linear-gradient(180deg,#020318 0%,#071026 100%); font-family:Inter,system-ui,Arial;color:#fff;display:flex;gap:14px;min-height:100vh; }
   .canvas-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px}
   .preview-controls{width:1080px;display:flex;gap:10px;justify-content:flex-end;align-items:center}
-  .capture {
-    width:1080px;height:1350px;border-radius:18px;padding:28px;
-    background:var(--bg);position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6);
-    transition:all .3s ease;
-  }
-
-  /* theme transition */
+  .capture { width:1080px;height:1350px;border-radius:18px;padding:28px; background:var(--bg);position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6); transition:all .3s ease; }
   .capture *, .capture { transition: all 300ms ease; }
-
-  .headline{
-    text-align:center;font-family:'Bebas Neue',sans-serif;
-    font-size:56px;color:var(--accent);letter-spacing:2px;margin-bottom:12px;
-    text-shadow:0 6px 28px rgba(0,234,255,0.08),0 0 18px rgba(0,234,255,0.12);
-    display:flex;align-items:center;justify-content:center;gap:10px;
-  }
-
-  /* Background presets are applied as classes */
-  .bg-stadium{ background-image:
-    radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 10%),
-    linear-gradient(150deg,#071026 0%, #07112a 100%); }
+  .headline{ text-align:center;font-family:'Bebas Neue',sans-serif; font-size:56px;color:var(--accent);letter-spacing:2px;margin-bottom:12px; text-shadow:0 6px 28px rgba(0,234,255,0.08),0 0 18px rgba(0,234,255,0.12); display:flex;align-items:center;justify-content:center;gap:10px; }
+  .bg-stadium{ background-image: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 10%), linear-gradient(150deg,#071026 0%, #07112a 100%); }
   .bg-darkneon{ background: linear-gradient(135deg,#020616,#07142a); }
   .bg-tricolor{ background: linear-gradient(180deg,#ff9933 0%, #ffffff 50%, #138808 100%); color:#071022; }
   .bg-fire{ background: linear-gradient(135deg,#2b0600,#6b0f00); }
   .bg-blur{ background: linear-gradient(135deg,#0e2442,#111530); }
   .bg-all{ background: linear-gradient(135deg,#061626,#2b0a1a); }
-
-  /* Effects overlay (vignette, grain) */
   .effects-overlay{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:overlay; }
-
-  /* layout containers */
   .layout-single{ display:flex; gap:20px; align-items:center; height:calc(100% - 120px); }
   .single-left{ width:55%; height:100%; border-radius:12px; overflow:hidden; position:relative; }
   .single-left .img-frame{ width:100%; height:100%; background:#081424; position:relative; overflow:hidden; }
   .single-left .img-frame img{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:none; min-width:100%; min-height:100%; object-fit:cover; transition:transform .12s ease; user-select:none; pointer-events:none; }
   .single-right{ flex:1; padding:20px; display:flex;flex-direction:column; justify-content:center; gap:12px; }
-
   .name-large{ font-family:'Bebas Neue'; font-size:46px; color:#fff; text-shadow:0 4px 24px rgba(0,0,0,0.6); }
   .team-small{ color:var(--muted); font-weight:600; }
   .stat-big{ font-family:'Bebas Neue'; font-size:110px; color:var(--gold); line-height:0.85; text-shadow: 0 8px 40px rgba(247,201,72,0.08); }
-
   .layout-list{ display:flex;flex-direction:column; gap:12px; max-height:calc(100% - 120px); overflow:auto; padding-right:8px; }
   .player-card{ display:flex; align-items:center; gap:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
   .player-thumb{ width:140px;height:140px;border-radius:10px;object-fit:cover;border:4px solid rgba(255,255,255,0.03); }
-
   .stats-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:8px; }
   .stat-pill{ padding:8px 10px; background:rgba(0,0,0,0.35); border-radius:8px; font-weight:700; font-size:14px; text-align:center; }
-
   .brand{ position:absolute; left:26px; bottom:18px; color:rgba(255,255,255,0.12); font-weight:700; }
-
-  /* RIGHT: control panel */
   .panel{ width:420px;background:linear-gradient(180deg,#071427,#071424); border-radius:12px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,0.6); overflow:auto; max-height:94vh;}
   .panel h3{ margin:6px 0 14px 0; color:var(--accent); font-family:'Bebas Neue'; font-size:20px; }
   label{ display:block; color:var(--muted); margin-top:10px; font-weight:600; font-size:13px; }
-  input[type="text"], input[type="number"], select, textarea{
-    width:100%; padding:10px; border-radius:8px; border:none; background:#081a2b; color:#fff; margin-top:8px;
-  }
+  input[type="text"], input[type="number"], select, textarea{ width:100%; padding:10px; border-radius:8px; border:none; background:#081a2b; color:#fff; margin-top:8px; }
   .row{ display:flex; gap:8px; margin-top:10px; }
   button{ cursor:pointer; border:none; border-radius:8px; padding:8px 10px; font-weight:700; }
   .btn-accent{ background:var(--accent); color:#04202a; }
   .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
   .small{ font-size:13px; padding:8px 10px; }
-
   .players-ctrl{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
   .player-ctrl{ display:flex; gap:10px; align-items:flex-start; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; }
   .player-ctrl img{ width:68px; height:68px; object-fit:cover; border-radius:8px; }
   .player-ctrl .meta{ flex:1; }
   .player-ctrl input[type="file"]{ display:block; margin-top:8px; color:#fff; }
-
   .drop-hint{ border:2px dashed rgba(255,255,255,0.03); padding:10px; border-radius:8px; text-align:center; color:var(--muted); margin-top:12px; }
-
   .flex-between{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
-
-  /* small helpers */
   .control-row{display:flex;gap:8px;margin-top:8px}
   .color{width:36px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
-
-  /* responsive */
   @media(max-width:1180){ .panel{ width:360px; } .capture{ width:900px;height:1200px; } }
 </style>
 </head>
 <body>
 
-<!-- LEFT: Canvas -->
 <div class="canvas-wrap">
   <div class="preview-controls">
     <select id="previewFrame" title="Preview frame">
@@ -128,7 +83,6 @@
   </div>
 </div>
 
-<!-- RIGHT: Panel -->
 <div class="panel">
   <h3>Poster Studio — Pro</h3>
 
@@ -172,6 +126,13 @@
 
   <label>Accent Color</label>
   <input id="accentColor" type="color" value="#00eaff">
+
+  <label>Flags</label>
+  <!-- ADDED: flag toggle so script doesn't throw -->
+  <select id="flagToggle">
+    <option value="yes">Show flags</option>
+    <option value="no">Hide flags</option>
+  </select>
 
   <label>Smart Highlight Rules</label>
   <div style="font-size:13px;color:var(--muted);margin-top:6px">Highlight Runs & Sixes when above threshold</div>
@@ -222,15 +183,21 @@
 </div>
 
 <script>
-/* ===========================
-   PRO Poster Studio - Core
-   =========================== */
+/* -------------------------
+   Fixed Poster Studio core
+   ------------------------- */
+
+/* fallback 1x1 transparent gif to avoid broken-image icon */
+const PLACEHOLDER_1PX = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 /* --- state --- */
-let players = JSON.parse(localStorage.getItem('ps_players')) || [
-  { name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219,Sixes:12,SR:132.1,Avg:54.8,Innings:7,Matches:8,Economy:0}, img:'', pos:{x:50,y:50,scale:1}, locked:false },
-  { name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198,Sixes:10,SR:129.6,Avg:39.6,Innings:5,Matches:6,Economy:0}, img:'', pos:{x:50,y:50,scale:1}, locked:false }
-];
+let players = JSON.parse(localStorage.getItem('ps_players') || 'null');
+if(!Array.isArray(players)){
+  players = [
+    { name:'Rohit Sharma', team:'India', flag:'🇮🇳', stat:{Runs:219,Sixes:12,SR:132.1,Avg:54.8,Innings:7,Matches:8,Economy:0}, img:'', pos:{x:50,y:50,scale:1}, locked:false },
+    { name:'Chris Gayle', team:'West Indies', flag:'🇻🇮', stat:{Runs:198,Sixes:10,SR:129.6,Avg:39.6,Innings:5,Matches:6,Economy:0}, img:'', pos:{x:50,y:50,scale:1}, locked:false }
+  ];
+}
 
 const capture = document.getElementById('capture');
 const templateArea = document.getElementById('templateArea');
@@ -243,141 +210,143 @@ function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
 
 /* render canvas according to layout */
 function renderCanvas(){
-  // theme/background
-  const bg = document.getElementById('bgSelect').value;
-  capture.className = 'capture ' + bg;
+  try {
+    // theme/background
+    const bg = document.getElementById('bgSelect').value;
+    capture.className = 'capture ' + bg;
 
-  // headline
-  const hf = document.getElementById('headlineFont').value || "'Bebas Neue',sans-serif";
-  const ht = document.getElementById('headlineText').value || 'MOST SIXES';
-  const hsize = Number(document.getElementById('headlineFontSize').value) || 56;
-  const hcolor = document.getElementById('headlineColor').value || '#00eaff';
-  document.getElementById('headlinePreview').style.fontFamily = hf;
-  document.getElementById('headlineText').style.color = hcolor;
-  document.getElementById('headlineText').style.fontSize = hsize + 'px';
+    // headline
+    const hf = document.getElementById('headlineFont').value || "'Bebas Neue',sans-serif";
+    const ht = document.getElementById('headlineText').value || 'MOST SIXES';
+    const hsize = Number(document.getElementById('headlineFontSize').value) || 56;
+    const hcolor = document.getElementById('headlineColor').value || '#00eaff';
+    document.getElementById('headlinePreview').style.fontFamily = hf;
+    document.getElementById('headlineText').style.color = hcolor;
+    document.getElementById('headlineText').style.fontSize = hsize + 'px';
 
-  // effects overlay (vignette + grain)
-  const vign = Number(document.getElementById('vignette').value);
-  const grain = Number(document.getElementById('grain').value);
-  const effectsOverlay = document.getElementById('effectsOverlay');
-  effectsOverlay.innerHTML = '';
-  effectsOverlay.style.pointerEvents = 'none';
+    // effects overlay (vignette + grain)
+    const vign = Number(document.getElementById('vignette').value);
+    const grain = Number(document.getElementById('grain').value);
+    const effectsOverlay = document.getElementById('effectsOverlay');
+    effectsOverlay.innerHTML = '';
+    effectsOverlay.style.pointerEvents = 'none';
 
-  // vignette using radial-gradient
-  const v = document.createElement('div');
-  v.style.position='absolute'; v.style.inset='0';
-  v.style.background = `radial-gradient(ellipse at center, rgba(0,0,0,${vign*0.2}) 0%, rgba(0,0,0,${vign}) 80%)`;
-  v.style.mixBlendMode='multiply'; v.style.pointerEvents='none';
-  effectsOverlay.appendChild(v);
+    const v = document.createElement('div');
+    v.style.position='absolute'; v.style.inset='0';
+    v.style.background = `radial-gradient(ellipse at center, rgba(0,0,0,${vign*0.2}) 0%, rgba(0,0,0,${vign}) 80%)`;
+    v.style.mixBlendMode='multiply'; v.style.pointerEvents='none';
+    effectsOverlay.appendChild(v);
 
-  // grain overlay (canvas)
-  if(grain>0){
-    const g = document.createElement('div');
-    g.style.position='absolute'; g.style.inset='0';
-    g.style.backgroundImage = `url(${createNoiseDataURL(Math.round(grain*2))})`;
-    g.style.opacity = Math.min(0.6, grain); g.style.pointerEvents='none';
-    effectsOverlay.appendChild(g);
-  }
+    if(grain>0){
+      const g = document.createElement('div');
+      g.style.position='absolute'; g.style.inset='0';
+      g.style.backgroundImage = `url(${createNoiseDataURL(Math.round(grain*2)||1)})`;
+      g.style.opacity = Math.min(0.6, grain); g.style.pointerEvents='none';
+      effectsOverlay.appendChild(g);
+    }
 
-  // layout
-  clearEl(templateArea);
-  const layout = document.getElementById('layoutSelect').value;
-  const showFlags = document.getElementById('flagToggle').value === 'yes';
-  // choose list (multi) or single
-  if(layout === 'single'){
-    const p = players[0] || {name:'Player',team:'Team',flag:'',stat:{},img:'',pos:{x:50,y:50,scale:1}};
-    const container = document.createElement('div'); container.className='layout-single';
-    // left image frame
-    const left = document.createElement('div'); left.className='single-left';
-    const frame = document.createElement('div'); frame.className='img-frame';
-    const img = document.createElement('img'); img.src = p.img || '';
-    img.alt = p.name;
-    // position + scale
-    img.style.transform = `translate(-50%,-50%) translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
-    frame.appendChild(img);
-    // attach drag-to-position for img if not locked
-    if(!p.locked) attachImageDrag(img, p);
-    left.appendChild(frame);
+    // layout
+    clearEl(templateArea);
+    const layout = document.getElementById('layoutSelect').value;
+    const flagEl = document.getElementById('flagToggle');
+    const showFlags = flagEl ? flagEl.value === 'yes' : true;
 
-    // right stat block
-    const right = document.createElement('div'); right.className='single-right';
-    const name = document.createElement('div'); name.className='name-large';
-    name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
-    const team = document.createElement('div'); team.className='team-small'; team.textContent = p.team;
-    const statBig = document.createElement('div'); statBig.className='stat-big';
-    statBig.textContent = p.stat.Runs || 0;
+    if(layout === 'single'){
+      const p = players[0] || {name:'Player',team:'Team',flag:'',stat:{},img:'',pos:{x:50,y:50,scale:1}};
+      const container = document.createElement('div'); container.className='layout-single';
 
-    const statsGrid = document.createElement('div'); statsGrid.className='stats-grid';
-    const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
-    statList.forEach(k => {
-      const pill = document.createElement('div'); pill.className='stat-pill';
-      const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
-      pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:16px">${val}</div>`;
-      statsGrid.appendChild(pill);
-      // smart highlight
-      const runsT = Number(document.getElementById('runsThreshold').value||0);
-      const sixesT = Number(document.getElementById('sixesThreshold').value||0);
-      if(k==='Runs' && Number(val) >= runsT) pill.style.background = 'linear-gradient(90deg,#ffd966,#f7c948)';
-      if(k==='Sixes' && Number(val) >= sixesT) pill.style.background = 'linear-gradient(90deg,#ff9b5c,#ff6b3a)';
-    });
+      const left = document.createElement('div'); left.className='single-left';
+      const frame = document.createElement('div'); frame.className='img-frame';
+      const img = document.createElement('img'); img.src = p.img || PLACEHOLDER_1PX;
+      img.alt = p.name;
+      img.style.transform = `translate(-50%,-50%) translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
+      frame.appendChild(img);
+      if(!p.locked) attachImageDrag(img, p);
+      left.appendChild(frame);
 
-    right.appendChild(name); right.appendChild(team); right.appendChild(statBig); right.appendChild(statsGrid);
-    container.appendChild(left); container.appendChild(right);
-    templateArea.appendChild(container);
-    animateNumber(statBig, Number(p.stat.Runs||0), 900);
-  } else {
-    const list = document.createElement('div'); list.className='layout-list';
-    let count = 3;
-    if(layout==='dual') count=2; if(layout==='three') count=3; if(layout==='five') count=Math.min(5,players.length||5);
-    const showPlayers = players.slice(0,count);
-    showPlayers.forEach(p=>{
-      const card = document.createElement('div'); card.className='player-card';
-      const thumbFrame = document.createElement('div'); thumbFrame.style.width='140px'; thumbFrame.style.height='140px'; thumbFrame.style.overflow='hidden'; thumbFrame.style.borderRadius='12px';
-      const thumb = document.createElement('img'); thumb.className='player-thumb'; thumb.src = p.img || ''; thumb.style.transform = `translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
-      if(!p.locked) attachImageDrag(thumb,p);
-      thumbFrame.appendChild(thumb);
-      const info = document.createElement('div'); info.style.flex='1';
-      const name = document.createElement('div'); name.style.fontWeight=800; name.style.fontSize='20px'; name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
-      const team = document.createElement('div'); team.style.color='var(--muted)'; team.style.marginTop='6px'; team.textContent = p.team;
-      const statRow = document.createElement('div'); statRow.className='stats-grid';
-      ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'].forEach(k=>{
+      const right = document.createElement('div'); right.className='single-right';
+      const name = document.createElement('div'); name.className='name-large';
+      name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
+      const team = document.createElement('div'); team.className='team-small'; team.textContent = p.team;
+      const statBig = document.createElement('div'); statBig.className='stat-big';
+      statBig.textContent = p.stat.Runs || 0;
+
+      const statsGrid = document.createElement('div'); statsGrid.className='stats-grid';
+      const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+      statList.forEach(k => {
         const pill = document.createElement('div'); pill.className='stat-pill';
-        const val = p.stat[k] !== undefined ? p.stat[k] : '';
-        pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:14px">${val}</div>`;
-        statRow.appendChild(pill);
-        if(k==='Runs' && Number(val) >= Number(document.getElementById('runsThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ffd966,#f7c948)';
-        if(k==='Sixes' && Number(val) >= Number(document.getElementById('sixesThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ff9b5c,#ff6b3a)';
+        const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
+        pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:16px">${val}</div>`;
+        statsGrid.appendChild(pill);
+        const runsT = Number(document.getElementById('runsThreshold').value||0);
+        const sixesT = Number(document.getElementById('sixesThreshold').value||0);
+        if(k==='Runs' && Number(val) >= runsT) pill.style.background = 'linear-gradient(90deg,#ffd966,#f7c948)';
+        if(k==='Sixes' && Number(val) >= sixesT) pill.style.background = 'linear-gradient(90deg,#ff9b5c,#ff6b3a)';
       });
-      info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
-      card.appendChild(thumbFrame); card.appendChild(info);
-      list.appendChild(card);
-    });
-    templateArea.appendChild(list);
+
+      right.appendChild(name); right.appendChild(team); right.appendChild(statBig); right.appendChild(statsGrid);
+      container.appendChild(left); container.appendChild(right);
+      templateArea.appendChild(container);
+      animateNumber(statBig, Number(p.stat.Runs||0), 900);
+    } else {
+      const list = document.createElement('div'); list.className='layout-list';
+      let count = 3;
+      if(layout==='dual') count=2; if(layout==='three') count=3; if(layout==='five') count=Math.min(5,players.length||5);
+      const showPlayers = players.slice(0,count);
+      showPlayers.forEach(p=>{
+        const card = document.createElement('div'); card.className='player-card';
+        const thumbFrame = document.createElement('div'); thumbFrame.style.width='140px'; thumbFrame.style.height='140px'; thumbFrame.style.overflow='hidden'; thumbFrame.style.borderRadius='12px';
+        const thumb = document.createElement('img'); thumb.className='player-thumb'; thumb.src = p.img || PLACEHOLDER_1PX; thumb.style.transform = `translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
+        if(!p.locked) attachImageDrag(thumb,p);
+        thumbFrame.appendChild(thumb);
+        const info = document.createElement('div'); info.style.flex='1';
+        const name = document.createElement('div'); name.style.fontWeight=800; name.style.fontSize='20px'; name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
+        const team = document.createElement('div'); team.style.color='var(--muted)'; team.style.marginTop='6px'; team.textContent = p.team;
+        const statRow = document.createElement('div'); statRow.className='stats-grid';
+        ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'].forEach(k=>{
+          const pill = document.createElement('div'); pill.className='stat-pill';
+          const val = p.stat[k] !== undefined ? p.stat[k] : '';
+          pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:14px">${val}</div>`;
+          statRow.appendChild(pill);
+          if(k==='Runs' && Number(val) >= Number(document.getElementById('runsThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ffd966,#f7c948)';
+          if(k==='Sixes' && Number(val) >= Number(document.getElementById('sixesThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ff9b5c,#ff6b3a)';
+        });
+        info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
+        card.appendChild(thumbFrame); card.appendChild(info);
+        list.appendChild(card);
+      });
+      templateArea.appendChild(list);
+    }
+    saveState();
+  } catch(err){
+    console.error('renderCanvas error', err);
   }
-  saveState();
 }
 
 /* attach drag to reposition image inside its frame */
 function attachImageDrag(imgEl, player){
-  // pointer events to change player.pos.x/y by dragging on the image
   let dragging = false;
   let startX=0,startY=0, startLeft=player.pos.x, startTop=player.pos.y;
   imgEl.style.cursor='grab';
   const onDown = (e) => {
     if(player.locked) return;
     dragging = true; imgEl.style.cursor='grabbing';
-    startX = e.clientX; startY = e.clientY; startLeft = player.pos.x; startTop = player.pos.y;
+    startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    startY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    startLeft = player.pos.x; startTop = player.pos.y;
     e.preventDefault();
   };
   const onMove = (e) => {
     if(!dragging) return;
-    const dx = (e.clientX - startX) / (imgEl.parentElement.clientWidth) * 100;
-    const dy = (e.clientY - startY) / (imgEl.parentElement.clientHeight) * 100;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const dx = (clientX - startX) / (imgEl.parentElement.clientWidth) * 100;
+    const dy = (clientY - startY) / (imgEl.parentElement.clientHeight) * 100;
     player.pos.x = clamp(startLeft + dx, -100, 200);
     player.pos.y = clamp(startTop + dy, -100, 200);
     imgEl.style.transform = `translate(-50%,-50%) translate(${player.pos.x-50}%,${player.pos.y-50}%) scale(${player.pos.scale})`;
   };
-  const onUp = (e) => { if(dragging){ dragging=false; imgEl.style.cursor='grab'; saveState(); } };
+  const onUp = () => { if(dragging){ dragging=false; imgEl.style.cursor='grab'; saveState(); } };
   imgEl.addEventListener('pointerdown', onDown);
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', onUp);
@@ -396,7 +365,7 @@ function renderPlayersControls(){
       e.preventDefault();
       const from = Number(e.dataTransfer.getData('text/plain'));
       const to = idx;
-      if(!Number.isNaN(from)){
+      if(!Number.isNaN(from) && from !== to){
         const item = players.splice(from,1)[0];
         players.splice(to,0,item);
         renderPlayersControls(); renderCanvas();
@@ -404,7 +373,7 @@ function renderPlayersControls(){
     });
     div.addEventListener('dragover', e=>e.preventDefault());
 
-    const thumb = document.createElement('img'); thumb.src = p.img || ''; thumb.alt='thumb';
+    const thumb = document.createElement('img'); thumb.src = p.img || PLACEHOLDER_1PX; thumb.alt='thumb';
     thumb.style.width='68px'; thumb.style.height='68px'; thumb.style.borderRadius='8px'; thumb.style.objectFit='cover';
     const meta = document.createElement('div'); meta.className='meta';
 
@@ -412,11 +381,10 @@ function renderPlayersControls(){
     const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value=p.team;
 
     const flagSel = document.createElement('select');
-    ['🇮🇳','🇵🇰','🇦🇺','🇿🇦','🇬🇧','🇳🇿','🇱🇰','🇧🇩','🇺🇸','🇯🇵','🇻🇮'].forEach(f=>{
-      const o=document.createElement('option'); o.value=f; o.innerText=f; if(p.flag===f) o.selected=true; flagSel.appendChild(o);
+    ['','🇮🇳','🇵🇰','🇦🇺','🇿🇦','🇬🇧','🇳🇿','🇱🇰','🇧🇩','🇺🇸','🇯🇵','🇻🇮'].forEach(f=>{
+      const o=document.createElement('option'); o.value=f; o.innerText=f || '—'; if(p.flag===f) o.selected=true; flagSel.appendChild(o);
     });
 
-    // scale slider
     const scaleRow = document.createElement('div'); scaleRow.style.display='flex'; scaleRow.style.gap='6px'; scaleRow.style.marginTop='6px';
     const scaleLabel = document.createElement('div'); scaleLabel.textContent='Scale'; scaleLabel.style.fontSize='12px'; scaleLabel.style.color='var(--muted)';
     const scaleInp = document.createElement('input'); scaleInp.type='range'; scaleInp.min=0.5; scaleInp.max=2; scaleInp.step=0.01; scaleInp.value=p.pos.scale || 1;
@@ -424,24 +392,23 @@ function renderPlayersControls(){
 
     scaleRow.appendChild(scaleLabel); scaleRow.appendChild(scaleInp);
 
-    // lock checkbox
     const lockBtn = document.createElement('button'); lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; lockBtn.className='btn-outline small';
     lockBtn.addEventListener('click', ()=>{ p.locked = !p.locked; lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; renderPlayersControls(); });
 
-    // file input to upload image
     const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*';
     fileInp.addEventListener('change', (e)=>{
       const f = e.target.files?.[0]; if(!f) return;
+      // fast preview using object URL (no base64 conversion), then read as base64 for persistence
+      const url = URL.createObjectURL(f);
+      thumb.src = url;
       const r = new FileReader(); r.onload = ev => { p.img = ev.target.result; renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
     });
 
-    // delete/duplicate
     const dupBtn = document.createElement('button'); dupBtn.textContent='Duplicate'; dupBtn.className='btn-outline small';
     dupBtn.addEventListener('click', ()=>{ const copy = JSON.parse(JSON.stringify(p)); players.push(copy); renderPlayersControls(); renderCanvas(); saveState(); });
     const delBtn = document.createElement('button'); delBtn.textContent='Delete'; delBtn.className='btn-outline small';
     delBtn.addEventListener('click', ()=>{ players.splice(idx,1); renderPlayersControls(); renderCanvas(); saveState(); });
 
-    // stats mini inputs
     const statKeys = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
     const statWrap = document.createElement('div'); statWrap.style.display='grid'; statWrap.style.gridTemplateColumns='repeat(4,1fr)'; statWrap.style.gap='6px'; statWrap.style.marginTop='8px';
     statKeys.forEach(k=>{
@@ -451,7 +418,6 @@ function renderPlayersControls(){
       statWrap.appendChild(si);
     });
 
-    // wire name/team change
     nameInp.addEventListener('input', ()=>{ p.name = nameInp.value; renderCanvas(); saveState(); });
     teamInp.addEventListener('input', ()=>{ p.team = teamInp.value; renderCanvas(); saveState(); });
     flagSel.addEventListener('change', ()=>{ p.flag = flagSel.value; renderCanvas(); saveState(); });
@@ -466,15 +432,15 @@ function renderPlayersControls(){
   });
 }
 
-/* utility: create small noise base64 canvas data url */
-function createNoiseDataURL(detail=2){
-  const size = 64;
+/* utility: noise canvas */
+function createNoiseDataURL(detail=1){
+  const size = 64 * Math.max(1, detail);
   const c = document.createElement('canvas'); c.width=size; c.height=size;
   const ctx = c.getContext('2d');
   const img = ctx.createImageData(size,size);
   for(let i=0;i<img.data.length;i+=4){
     const v = Math.floor(Math.random()*255);
-    img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=Math.floor(25 + Math.random()*50);
+    img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=Math.floor(10 + Math.random()*30);
   }
   ctx.putImageData(img,0,0);
   return c.toDataURL('image/png');
@@ -487,7 +453,7 @@ function animateNumber(el, target, duration=700){
   if(diff===0){ el.textContent = target; return; }
   const frames = Math.max(12, Math.min(60, Math.floor(duration/16)));
   let f=0;
-  const id = setInterval(()=>{ f++; const v = Math.round(start + diff*(f/frames)); el.textContent = v; if(f>=frames) clearInterval(id); }, duration/frames);
+  const id = setInterval(()=>{ f++; const v = Math.round(start + diff*(f/frames)); el.textContent = v; if(f>=frames) clearInterval(id); }, Math.max(10, Math.floor(duration/frames)));
 }
 
 /* export */
@@ -498,9 +464,7 @@ async function exportImage(){
   if(size!=='capture'){ [width,height] = size.split('x').map(Number); }
   const scale = Number(document.getElementById('exportScale').value) || 1;
   const transparent = document.getElementById('transparent').checked;
-  // capture with html2canvas
   const canvas = await html2canvas(capture, {scale: scale, useCORS:true, backgroundColor: transparent?null:'#000'});
-  // if different size, scale to target
   let final = canvas;
   if(canvas.width !== width || canvas.height !== height){
     final = document.createElement('canvas'); final.width=width; final.height=height;
@@ -514,7 +478,7 @@ async function exportImage(){
 
 /* Save/load JSON */
 function exportJSON(){
-  const data = { players, settings:{
+  const data = { players: JSON.parse(JSON.stringify(players)), settings:{
     bg: document.getElementById('bgSelect').value,
     layout: document.getElementById('layoutSelect').value,
     headline: document.getElementById('headlineText').value
@@ -539,7 +503,7 @@ function importJSON(file){
   r.readAsText(file);
 }
 
-/* global drop to add player */
+/* drag-drop to add player */
 const globalDrop = document.getElementById('globalDrop');
 globalDrop.addEventListener('dragover', e=>{ e.preventDefault(); globalDrop.style.borderColor='var(--accent)'; });
 globalDrop.addEventListener('dragleave', e=>{ globalDrop.style.borderColor='rgba(255,255,255,0.03)'; });
@@ -550,7 +514,7 @@ globalDrop.addEventListener('drop', e=>{
 });
 
 /* UI bindings */
-document.getElementById('addPlayer').addEventListener('click', ()=>{ players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); });
+document.getElementById('addPlayer').addEventListener('click', ()=>{ players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); });
 document.getElementById('clearAll').addEventListener('click', ()=>{ if(confirm('Clear all players?')){ players=[]; renderPlayersControls(); renderCanvas(); saveState(); } });
 document.getElementById('resetDemo').addEventListener('click', ()=>{ localStorage.removeItem('ps_players'); location.reload(); });
 document.getElementById('exportBtn').addEventListener('click', exportImage);
@@ -559,21 +523,20 @@ document.getElementById('jsonFile').addEventListener('change', e=> importJSON(e.
 document.getElementById('importJsonBtn').addEventListener('click', ()=> document.getElementById('jsonFile').click());
 document.getElementById('saveTemplate').addEventListener('click', ()=> {
   const name = prompt('Template name'); if(!name) return;
-  const list = JSON.parse(localStorage.getItem('ps_templates')||'[]'); list.push({name,players,meta:{bg:document.getElementById('bgSelect').value}}); localStorage.setItem('ps_templates', JSON.stringify(list)); alert('Saved template: '+name);
+  const list = JSON.parse(localStorage.getItem('ps_templates')||'[]');
+  list.push({name, players: JSON.parse(JSON.stringify(players)), meta:{bg:document.getElementById('bgSelect').value}});
+  localStorage.setItem('ps_templates', JSON.stringify(list)); alert('Saved template: '+name);
 });
 
-/* headline updates */
 document.getElementById('headlineText').addEventListener('input', renderCanvas);
-document.getElementById('headlineFontSize').addEventListener('input', ()=>{ document.getElementById('headlineText').style.fontSize = document.getElementById('headlineFontSize').value + 'px'; });
-document.getElementById('headlineColor').addEventListener('input', (e)=>{ document.getElementById('headlineText').style.color = e.target.value; });
+document.getElementById('headlineFontSize').addEventListener('input', ()=>{ document.getElementById('headlineText').style.fontSize = document.getElementById('headlineFontSize').value + 'px'; renderCanvas(); });
+document.getElementById('headlineColor').addEventListener('input', (e)=>{ document.getElementById('headlineText').style.color = e.target.value; renderCanvas(); });
 
-/* misc update triggers */
 ['bgSelect','layoutSelect','headlineFont','vignette','grain','runsThreshold','sixesThreshold','flagToggle','headlineFontSize','headlineColor','accentColor'].forEach(id=>{
   const el = document.getElementById(id); if(el) el.addEventListener('change', renderCanvas);
 });
 ['vignette','grain','runsThreshold','sixesThreshold'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderCanvas); });
 
-/* preview frame toggles */
 document.getElementById('previewFrame').addEventListener('change', (e)=>{
   const v = e.target.value;
   if(v==='ig'){ capture.style.width='1080px'; capture.style.height='1350px'; }
@@ -588,12 +551,10 @@ window.addEventListener('beforeunload', () => saveState());
 /* initial render */
 renderPlayersControls(); renderCanvas();
 
-/* small utility to toggle guides (not implemented heavy) */
 document.getElementById('togglePreview').addEventListener('click', ()=> {
   capture.classList.toggle('show-guides');
 });
 
-/* expose some helpers for debugging */
 window.PS = { players, renderCanvas, renderPlayersControls, exportImage, exportJSON, importJSON };
 
 </script>
