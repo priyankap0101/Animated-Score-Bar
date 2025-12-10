@@ -3,62 +3,122 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Poster Studio — Pro (All Features) - Fixed</title>
+<title>Poster Studio — Pro v2 (Sporty 3D Mix)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#071026; --panel:#071427; --accent:#00eaff; --muted:#9fb0c6; --gold:#f7c948; --card-radius:12px; }
+  :root{
+    --bg-1:#030417;
+    --bg-2:#071427;
+    --panel:#06111b;
+    --muted:#9fb0c6;
+    --accent1:#00eaff;   /* cyan */
+    --accent2:#ffd25c;   /* warm */
+    --accent3:#ff6b61;   /* energy */
+    --glass: rgba(255,255,255,0.04);
+    --card-radius:18px;
+    --glass-2: rgba(255,255,255,0.03);
+    --shadow-1: 0 10px 30px rgba(2,6,23,0.6);
+    --shadow-2: 0 22px 60px rgba(3,8,20,0.7);
+    --glow: 0 0 28px rgba(0,234,255,0.12);
+  }
   *{box-sizing:border-box}
-  body{ margin:0;padding:16px;background:linear-gradient(180deg,#020318 0%,#071026 100%); font-family:Inter,system-ui,Arial;color:#fff;display:flex;gap:14px;min-height:100vh; }
-  .canvas-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:14px}
+  html,body{height:100%}
+  body{
+    margin:0;padding:20px;background:
+      radial-gradient(1200px 800px at 10% 10%, rgba(0, 234, 255, 0.03), transparent 6%),
+      linear-gradient(180deg,var(--bg-1) 0%, #05061a 100%);
+    font-family:Inter,system-ui,Arial;color:#eaf6ff;display:flex;gap:18px;min-height:100vh;
+  }
+
+  /* LAYOUT */
+  .canvas-wrap{flex:1;display:flex;flex-direction:column;gap:14px;align-items:center}
   .preview-controls{width:1080px;display:flex;gap:10px;justify-content:flex-end;align-items:center}
-  .capture { width:1080px;height:1350px;border-radius:18px;padding:28px; background:var(--bg);position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6); transition:all .3s ease; }
-  .capture *, .capture { transition: all 300ms ease; }
-  .headline{ text-align:center;font-family:'Bebas Neue',sans-serif; font-size:56px;color:var(--accent);letter-spacing:2px;margin-bottom:12px; text-shadow:0 6px 28px rgba(0,234,255,0.08),0 0 18px rgba(0,234,255,0.12); display:flex;align-items:center;justify-content:center;gap:10px; }
-  .bg-stadium{ background-image: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.02), transparent 10%), linear-gradient(150deg,#071026 0%, #07112a 100%); }
-  .bg-darkneon{ background: linear-gradient(135deg,#020616,#07142a); }
-  .bg-tricolor{ background: linear-gradient(180deg,#ff9933 0%, #ffffff 50%, #138808 100%); color:#071022; }
-  .bg-fire{ background: linear-gradient(135deg,#2b0600,#6b0f00); }
-  .bg-blur{ background: linear-gradient(135deg,#0e2442,#111530); }
-  .bg-all{ background: linear-gradient(135deg,#061626,#2b0a1a); }
-  .effects-overlay{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:overlay; }
-  .layout-single{ display:flex; gap:20px; align-items:center; height:calc(100% - 120px); }
-  .single-left{ width:55%; height:100%; border-radius:12px; overflow:hidden; position:relative; }
-  .single-left .img-frame{ width:100%; height:100%; background:#081424; position:relative; overflow:hidden; }
-  .single-left .img-frame img{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); max-width:none; min-width:100%; min-height:100%; object-fit:cover; transition:transform .12s ease; user-select:none; pointer-events:none; }
-  .single-right{ flex:1; padding:20px; display:flex;flex-direction:column; justify-content:center; gap:12px; }
-  .name-large{ font-family:'Bebas Neue'; font-size:46px; color:#fff; text-shadow:0 4px 24px rgba(0,0,0,0.6); }
-  .team-small{ color:var(--muted); font-weight:600; }
-  .stat-big{ font-family:'Bebas Neue'; font-size:110px; color:var(--gold); line-height:0.85; text-shadow: 0 8px 40px rgba(247,201,72,0.08); }
-  .layout-list{ display:flex;flex-direction:column; gap:12px; max-height:calc(100% - 120px); overflow:auto; padding-right:8px; }
-  .player-card{ display:flex; align-items:center; gap:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,0.03); }
-  .player-thumb{ width:140px;height:140px;border-radius:10px;object-fit:cover;border:4px solid rgba(255,255,255,0.03); }
-  .stats-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:8px; }
-  .stat-pill{ padding:8px 10px; background:rgba(0,0,0,0.35); border-radius:8px; font-weight:700; font-size:14px; text-align:center; }
-  .brand{ position:absolute; left:26px; bottom:18px; color:rgba(255,255,255,0.12); font-weight:700; }
-  .panel{ width:420px;background:linear-gradient(180deg,#071427,#071424); border-radius:12px; padding:18px; box-shadow:0 10px 40px rgba(0,0,0,0.6); overflow:auto; max-height:94vh;}
-  .panel h3{ margin:6px 0 14px 0; color:var(--accent); font-family:'Bebas Neue'; font-size:20px; }
-  label{ display:block; color:var(--muted); margin-top:10px; font-weight:600; font-size:13px; }
-  input[type="text"], input[type="number"], select, textarea{ width:100%; padding:10px; border-radius:8px; border:none; background:#081a2b; color:#fff; margin-top:8px; }
-  .row{ display:flex; gap:8px; margin-top:10px; }
-  button{ cursor:pointer; border:none; border-radius:8px; padding:8px 10px; font-weight:700; }
-  .btn-accent{ background:var(--accent); color:#04202a; }
-  .btn-outline{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
-  .small{ font-size:13px; padding:8px 10px; }
-  .players-ctrl{ margin-top:12px; display:flex; flex-direction:column; gap:12px; }
-  .player-ctrl{ display:flex; gap:10px; align-items:flex-start; padding:10px; background:rgba(255,255,255,0.02); border-radius:10px; }
-  .player-ctrl img{ width:68px; height:68px; object-fit:cover; border-radius:8px; }
-  .player-ctrl .meta{ flex:1; }
-  .player-ctrl input[type="file"]{ display:block; margin-top:8px; color:#fff; }
-  .drop-hint{ border:2px dashed rgba(255,255,255,0.03); padding:10px; border-radius:8px; text-align:center; color:var(--muted); margin-top:12px; }
-  .flex-between{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .control-row{display:flex;gap:8px;margin-top:8px}
-  .color{width:36px;height:36px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);cursor:pointer}
-  @media(max-width:1180){ .panel{ width:360px; } .capture{ width:900px;height:1200px; } }
+  select, input[type="color"]{height:40px;border-radius:10px;padding:6px 10px;border:none;background:#06121e;color:#eaf6ff}
+  .btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:8px 12px;font-weight:700;border:none;cursor:pointer}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .btn-primary{background:linear-gradient(90deg,var(--accent1),#66f0c8);color:#04202a;box-shadow:var(--glow)}
+  .small{font-size:13px;padding:6px 10px}
+
+  /* CAPTURE CARD */
+  .capture{
+    width:1080px;height:1350px;border-radius:20px;padding:26px;
+    background: linear-gradient(180deg,#050817 0%, #071122 60%);
+    position:relative;overflow:hidden;box-shadow:var(--shadow-2);
+    transform-style:preserve-3d; transition:all .28s cubic-bezier(.2,.8,.2,1);
+  }
+  .capture.show-guides{outline:2px dashed rgba(255,255,255,0.02)}
+
+  /* headline - bold + neon */
+  .headline{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:2px;
+    color:var(--accent1);text-transform:uppercase;
+    text-shadow: 0 8px 40px rgba(0,234,255,0.06), 0 0 18px rgba(0,234,255,0.12);
+    margin-bottom:14px;
+  }
+  .headline input[type="text"]{ background:transparent;border:none;color:var(--accent1);outline:none;text-align:center;font-size:56px;width:72% }
+
+  /* 3D layout wrappers */
+  .stage{ display:flex;gap:22px;height:calc(100% - 120px) }
+  .stage-left{ width:64%; border-radius:16px; overflow:hidden; position:relative; transform:translateZ(30px); }
+  .stage-right{ flex:1; display:flex;flex-direction:column; gap:14px; padding:6px; transform:translateZ(10px) }
+
+  /* left big player card */
+  .player-card-hero{
+    width:100%; height:100%; position:relative; border-radius:16px; overflow:hidden;
+    background: linear-gradient(180deg, rgba(6,18,28,0.7), rgba(3,6,12,0.7));
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 10px 30px rgba(0,0,0,0.6);
+    display:flex; gap:18px; padding:24px; align-items:center;
+    transform: translateY(0); transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .2s;
+  }
+  .player-card-hero:hover{ transform: translateY(-8px); box-shadow: 0 48px 110px rgba(3,7,18,0.85); }
+
+  .hero-img-wrap{ width:55%; height:100%; border-radius:12px; overflow:hidden; position:relative; background:linear-gradient(120deg,#031428,#07142a) }
+  .hero-img-wrap img{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover; transition: transform .25s ease; }
+  .hero-meta{ flex:1; display:flex;flex-direction:column; gap:12px; padding:24px; color:#fff; }
+
+  .name-large{ font-family:'Bebas Neue'; font-size:48px; color:#fff; text-shadow:0 6px 20px rgba(0,0,0,0.6) }
+  .team-small{ color:var(--muted); font-weight:700 }
+  .stat-big{ font-family:'Bebas Neue'; font-size:120px; color:var(--accent2); line-height:0.86; text-shadow:0 10px 60px rgba(255,210,92,0.08) }
+
+  .stats-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:8px }
+  .stat-pill{
+    padding:10px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    display:flex;flex-direction:column;gap:6px;align-items:start;font-weight:700;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.02)
+  }
+  .stat-pill .k{ font-size:12px;color:var(--muted) }
+  .stat-pill .v{ font-size:20px }
+
+  /* right: list of small cards with 3D lift */
+  .list-scroll{ flex:1; overflow:auto; display:flex;flex-direction:column; gap:12px; padding-right:6px; }
+  .mini-card{
+    display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow:var(--shadow-1); transform:translateZ(8px); transition:transform .24s, box-shadow .24s;
+  }
+  .mini-card:hover{ transform:translateY(-8px) translateZ(18px); box-shadow: 0 30px 70px rgba(0,0,0,0.6) }
+  .mini-thumb{ width:110px;height:110px;border-radius:10px;overflow:hidden;border:4px solid rgba(255,255,255,0.03); }
+  .mini-thumb img{ width:100%;height:100%;object-fit:cover;display:block }
+
+  /* CONTROL PANEL */
+  .panel{ width:420px;background:linear-gradient(180deg,#071427,#0a1220); border-radius:16px; padding:18px; box-shadow:var(--shadow-2); overflow:auto; max-height:94vh;}
+  .panel h3{ margin:6px 0 14px 0; color:var(--accent1); font-family:'Bebas Neue'; font-size:20px; }
+  label{ display:block; color:var(--muted); margin-top:12px; font-weight:700; font-size:13px; }
+  .control-row{display:flex;gap:8px;margin-top:8px;align-items:center}
+  .drop-hint{ margin-top:12px;border-radius:10px;border:2px dashed rgba(255,255,255,0.03);padding:8px;text-align:center;color:var(--muted);background:linear-gradient(180deg,transparent,rgba(255,255,255,0.004)) }
+  .players-ctrl{ margin-top:12px;display:flex;flex-direction:column;gap:10px }
+  .player-ctrl{ display:flex; gap:10px; align-items:flex-start; padding:10px; border-radius:12px; background:linear-gradient(180deg,#06101a,#041021); border:1px solid rgba(255,255,255,0.02) }
+  .player-ctrl img{ width:68px;height:68px;border-radius:8px;object-fit:cover }
+  .meta input{ width:100%; padding:8px;border-radius:8px;border:none;background:#071826;color:#fff;margin-top:6px }
+
+  /* subtle responsive */
+  @media(max-width:1180){ .panel{ width:360px } .capture{ width:900px;height:1200px } .headline input[type="text"]{font-size:44px} .stats-grid{grid-template-columns:repeat(1,1fr)} .stage-left{width:60%} }
 </style>
 </head>
 <body>
 
+<!-- LEFT: Canvas -->
 <div class="canvas-wrap">
   <div class="preview-controls">
     <select id="previewFrame" title="Preview frame">
@@ -67,49 +127,84 @@
       <option value="yt">YouTube 1920×1080</option>
       <option value="short">Shorts 1080×1920</option>
     </select>
-    <button id="togglePreview" class="btn-outline small">Toggle Guides</button>
+    <button id="togglePreview" class="btn btn-ghost small">Toggle Guides</button>
   </div>
 
-  <div id="capture" class="capture bg-darkneon">
+  <div id="capture" class="capture">
     <div class="headline" id="headlinePreview">
-      <input id="headlineText" type="text" value="MOST SIXES" style="font-family:'Bebas Neue';font-size:56px;background:transparent;border:none;color:var(--accent);width:70%;text-align:center;outline:none" />
-      <input id="headlineFontSize" type="number" value="56" min="20" max="140" style="width:78px;background:#071a26;border-radius:8px;padding:6px;color:#fff;margin-left:6px;" title="Font size" />
+      <input id="headlineText" type="text" value="MOST SIXES" style="font-family:'Bebas Neue';font-size:56px;background:transparent;border:none;color:var(--accent1);width:68%;text-align:center;outline:none" />
+      <input id="headlineFontSize" type="number" value="64" min="20" max="140" style="width:84px;background:#071a26;border-radius:8px;padding:6px;color:#fff;margin-left:6px;" title="Font size" />
     </div>
 
-    <div id="templateArea" style="height:calc(100% - 120px)"></div>
+    <div class="stage" id="templateArea" style="height:calc(100% - 120px)">
+      <div class="stage-left">
+        <div class="player-card-hero" id="heroCard">
+          <div class="hero-img-wrap" style="min-height:420px">
+            <img id="heroImg" src="" alt="player" />
+          </div>
+          <div class="hero-meta">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div class="name-large" id="heroName">Player Name</div>
+                <div class="team-small" id="heroTeam">Team</div>
+              </div>
+              <div style="text-align:right">
+                <div class="stat-big" id="heroStat">0</div>
+                <div style="color:var(--muted);font-weight:700;margin-top:6px">Runs</div>
+              </div>
+            </div>
+
+            <div class="stats-grid" id="heroStats">
+              <!-- stat pills inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stage-right">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:800;color:var(--muted);">Players</div>
+          <div style="display:flex;gap:8px">
+            <button id="addPlayer" class="btn btn-primary small">+ Add</button>
+            <button id="saveTemplate" class="btn btn-ghost small">Save</button>
+          </div>
+        </div>
+
+        <div class="list-scroll" id="playersList">
+          <!-- mini player cards here -->
+        </div>
+      </div>
+    </div>
 
     <div class="effects-overlay" id="effectsOverlay"></div>
-    <div class="brand">YourBrand • Cricket</div>
+    <div class="brand" style="position:absolute;left:28px;bottom:18px;color:rgba(255,255,255,0.08);font-weight:800">YourBrand • Cricket</div>
   </div>
 </div>
 
+<!-- RIGHT: Panel -->
 <div class="panel">
-  <h3>Poster Studio — Pro</h3>
+  <h3>Poster Studio — Pro (Sporty 3D)</h3>
 
   <label>Theme / Background</label>
   <select id="bgSelect">
-    <option value="bg-stadium">A — Stadium Glow</option>
-    <option value="bg-darkneon">B — Dark Neon</option>
-    <option value="bg-tricolor">C — Tricolor</option>
-    <option value="bg-fire">D — Fire</option>
-    <option value="bg-blur">E — Gradient Blur</option>
-    <option value="bg-all">F — Mixed</option>
+    <option value="dark">Dark Neon</option>
+    <option value="stadium">Stadium</option>
+    <option value="fire">Fire</option>
   </select>
 
   <label>Layout</label>
   <select id="layoutSelect">
     <option value="single">Single Player</option>
-    <option value="dual">Dual Player</option>
-    <option value="three">Three Players</option>
-    <option value="five">Five Players</option>
+    <option value="dual">Dual</option>
+    <option value="three">Three</option>
+    <option value="five">Five</option>
   </select>
 
-  <label>Headline Options</label>
+  <label>Headline</label>
   <div class="control-row">
     <select id="headlineFont">
       <option value="'Bebas Neue',sans-serif">Bebas Neue</option>
       <option value="Inter, sans-serif">Inter</option>
-      <option value="Arial, sans-serif">Arial</option>
     </select>
     <input id="headlineColor" type="color" value="#00eaff" title="Headline color" />
   </div>
@@ -117,38 +212,35 @@
   <label>Effects</label>
   <div class="control-row">
     <label style="font-size:13px">Vignette
-      <input id="vignette" type="range" min="0" max="1" step="0.05" value="0.35">
+      <input id="vignette" type="range" min="0" max="1" step="0.05" value="0.38" />
     </label>
     <label style="font-size:13px">Grain
-      <input id="grain" type="range" min="0" max="1" step="0.05" value="0.08">
+      <input id="grain" type="range" min="0" max="1" step="0.05" value="0.08" />
     </label>
   </div>
 
-  <label>Accent Color</label>
-  <input id="accentColor" type="color" value="#00eaff">
-
   <label>Flags</label>
-  <!-- ADDED: flag toggle so script doesn't throw -->
   <select id="flagToggle">
-    <option value="yes">Show flags</option>
-    <option value="no">Hide flags</option>
+    <option value="yes">Show Flags</option>
+    <option value="no">Hide Flags</option>
   </select>
 
-  <label>Smart Highlight Rules</label>
-  <div style="font-size:13px;color:var(--muted);margin-top:6px">Highlight Runs & Sixes when above threshold</div>
-  <div class="control-row" style="margin-top:8px">
-    <input id="runsThreshold" type="number" value="200" style="width:80px" />
-    <input id="sixesThreshold" type="number" value="10" style="width:80px" />
+  <label>Smart Highlights</label>
+  <div class="control-row">
+    <input id="runsThreshold" type="number" value="200" style="width:110px" />
+    <input id="sixesThreshold" type="number" value="10" style="width:110px" />
   </div>
 
-  <div class="flex-between" style="margin-top:12px">
-    <button id="addPlayer" class="btn-accent">+ Add Player</button>
-    <button id="saveTemplate" class="btn-outline">Save Template</button>
+  <div class="drop-hint" id="globalDrop">Drag an image here to add a new player</div>
+
+  <div style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:800;color:var(--muted)">Editor</div>
+      <div style="font-size:12px;color:var(--muted)">Autosave enabled</div>
+    </div>
+
+    <div class="players-ctrl" id="playersCtrl" style="margin-top:10px"></div>
   </div>
-
-  <div style="margin-top:10px;" class="drop-hint" id="globalDrop">Drag an image here to add a new player</div>
-
-  <div class="players-ctrl" id="playersCtrl"></div>
 
   <hr style="border:0;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
 
@@ -157,40 +249,46 @@
     <select id="exportType"><option value="png">PNG</option><option value="jpg">JPG</option></select>
     <select id="exportSize"><option value="1080x1350">1080×1350</option><option value="1080x1920">1080×1920</option><option value="1920x1080">1920×1080</option><option value="capture">Current</option></select>
   </div>
-  <div style="margin-top:8px" class="control-row">
+
+  <div class="control-row" style="margin-top:8px">
     <label>Scale <input id="exportScale" type="range" min="1" max="3" value="1" step="0.1"></label>
     <label><input id="transparent" type="checkbox"> Transparent PNG</label>
   </div>
 
-  <div class="flex-between" style="margin-top:12px">
-    <button id="exportBtn" class="btn-accent">Export Image</button>
-    <button id="exportJson" class="btn-outline">Export JSON</button>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button id="exportBtn" class="btn btn-primary">Export</button>
+    <button id="exportJson" class="btn btn-ghost">Export JSON</button>
+    <button id="importJsonBtn" class="btn btn-ghost">Import JSON</button>
+    <input id="jsonFile" type="file" accept=".json" style="display:none" />
   </div>
 
-  <div style="margin-top:8px" class="flex-between">
-    <button id="importJsonBtn" class="btn-outline">Import JSON</button>
-    <input id="jsonFile" type="file" accept=".json" style="display:none">
+  <div style="margin-top:12px;display:flex;gap:8px">
+    <button id="resetDemo" class="btn btn-ghost small">Reset</button>
+    <button id="clearAll" class="btn btn-ghost small">Clear</button>
   </div>
 
-  <div style="margin-top:12px" class="flex-between">
-    <button id="resetDemo" class="btn-outline small">Reset Demo</button>
-    <button id="clearAll" class="btn-outline small">Clear All</button>
-  </div>
-
-  <p style="color:var(--muted);font-size:13px;margin-top:12px">
-    Changes autosave locally. Use Export JSON to save project, Import JSON to load.
-  </p>
+  <p style="color:var(--muted);font-size:13px;margin-top:12px">Saved locally. Use Export JSON to save projects.</p>
 </div>
 
 <script>
-/* -------------------------
-   Fixed Poster Studio core
-   ------------------------- */
+/* ========= Poster Studio v2 - Sporty 3D Mix ========== */
 
-/* fallback 1x1 transparent gif to avoid broken-image icon */
-const PLACEHOLDER_1PX = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+/* placeholder SVG thumb (data URL) */
+const PLACEHOLDER_SVG = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <defs>
+      <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#071426"/><stop offset="1" stop-color="#021018"/></linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g)"/>
+    <g transform="translate(75,75)">
+      <circle cx="75" cy="40" r="36" fill="#0e6f88"/>
+      <rect x="20" y="110" rx="18" ry="18" width="110" height="70" fill="#0b2432"/>
+      <text x="20" y="200" fill="#9fb0c6" font-family="Inter" font-size="22">Add Image</text>
+    </g>
+  </svg>`
+);
 
-/* --- state --- */
+/* state */
 let players = JSON.parse(localStorage.getItem('ps_players') || 'null');
 if(!Array.isArray(players)){
   players = [
@@ -199,220 +297,190 @@ if(!Array.isArray(players)){
   ];
 }
 
+/* dom refs */
 const capture = document.getElementById('capture');
-const templateArea = document.getElementById('templateArea');
+const playersList = document.getElementById('playersList');
 const playersCtrl = document.getElementById('playersCtrl');
+const heroImg = document.getElementById('heroImg');
+const heroName = document.getElementById('heroName');
+const heroTeam = document.getElementById('heroTeam');
+const heroStat = document.getElementById('heroStat');
+const heroStats = document.getElementById('heroStats');
 
-/* helpers */
-function saveState(){ localStorage.setItem('ps_players', JSON.stringify(players)); }
-function clearEl(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function saveState(){ localStorage.setItem('ps_players', JSON.stringify(players)); }
 
-/* render canvas according to layout */
-function renderCanvas(){
-  try {
-    // theme/background
-    const bg = document.getElementById('bgSelect').value;
-    capture.className = 'capture ' + bg;
-
-    // headline
-    const hf = document.getElementById('headlineFont').value || "'Bebas Neue',sans-serif";
-    const ht = document.getElementById('headlineText').value || 'MOST SIXES';
-    const hsize = Number(document.getElementById('headlineFontSize').value) || 56;
-    const hcolor = document.getElementById('headlineColor').value || '#00eaff';
-    document.getElementById('headlinePreview').style.fontFamily = hf;
-    document.getElementById('headlineText').style.color = hcolor;
-    document.getElementById('headlineText').style.fontSize = hsize + 'px';
-
-    // effects overlay (vignette + grain)
-    const vign = Number(document.getElementById('vignette').value);
-    const grain = Number(document.getElementById('grain').value);
-    const effectsOverlay = document.getElementById('effectsOverlay');
-    effectsOverlay.innerHTML = '';
-    effectsOverlay.style.pointerEvents = 'none';
-
-    const v = document.createElement('div');
-    v.style.position='absolute'; v.style.inset='0';
-    v.style.background = `radial-gradient(ellipse at center, rgba(0,0,0,${vign*0.2}) 0%, rgba(0,0,0,${vign}) 80%)`;
-    v.style.mixBlendMode='multiply'; v.style.pointerEvents='none';
-    effectsOverlay.appendChild(v);
-
-    if(grain>0){
-      const g = document.createElement('div');
-      g.style.position='absolute'; g.style.inset='0';
-      g.style.backgroundImage = `url(${createNoiseDataURL(Math.round(grain*2)||1)})`;
-      g.style.opacity = Math.min(0.6, grain); g.style.pointerEvents='none';
-      effectsOverlay.appendChild(g);
-    }
-
-    // layout
-    clearEl(templateArea);
-    const layout = document.getElementById('layoutSelect').value;
-    const flagEl = document.getElementById('flagToggle');
-    const showFlags = flagEl ? flagEl.value === 'yes' : true;
-
-    if(layout === 'single'){
-      const p = players[0] || {name:'Player',team:'Team',flag:'',stat:{},img:'',pos:{x:50,y:50,scale:1}};
-      const container = document.createElement('div'); container.className='layout-single';
-
-      const left = document.createElement('div'); left.className='single-left';
-      const frame = document.createElement('div'); frame.className='img-frame';
-      const img = document.createElement('img'); img.src = p.img || PLACEHOLDER_1PX;
-      img.alt = p.name;
-      img.style.transform = `translate(-50%,-50%) translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
-      frame.appendChild(img);
-      if(!p.locked) attachImageDrag(img, p);
-      left.appendChild(frame);
-
-      const right = document.createElement('div'); right.className='single-right';
-      const name = document.createElement('div'); name.className='name-large';
-      name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
-      const team = document.createElement('div'); team.className='team-small'; team.textContent = p.team;
-      const statBig = document.createElement('div'); statBig.className='stat-big';
-      statBig.textContent = p.stat.Runs || 0;
-
-      const statsGrid = document.createElement('div'); statsGrid.className='stats-grid';
-      const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
-      statList.forEach(k => {
-        const pill = document.createElement('div'); pill.className='stat-pill';
-        const val = p.stat[k] !== undefined ? p.stat[k] : (k==='SR' ? (p.stat['SR']||0) : 0);
-        pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:16px">${val}</div>`;
-        statsGrid.appendChild(pill);
-        const runsT = Number(document.getElementById('runsThreshold').value||0);
-        const sixesT = Number(document.getElementById('sixesThreshold').value||0);
-        if(k==='Runs' && Number(val) >= runsT) pill.style.background = 'linear-gradient(90deg,#ffd966,#f7c948)';
-        if(k==='Sixes' && Number(val) >= sixesT) pill.style.background = 'linear-gradient(90deg,#ff9b5c,#ff6b3a)';
-      });
-
-      right.appendChild(name); right.appendChild(team); right.appendChild(statBig); right.appendChild(statsGrid);
-      container.appendChild(left); container.appendChild(right);
-      templateArea.appendChild(container);
-      animateNumber(statBig, Number(p.stat.Runs||0), 900);
-    } else {
-      const list = document.createElement('div'); list.className='layout-list';
-      let count = 3;
-      if(layout==='dual') count=2; if(layout==='three') count=3; if(layout==='five') count=Math.min(5,players.length||5);
-      const showPlayers = players.slice(0,count);
-      showPlayers.forEach(p=>{
-        const card = document.createElement('div'); card.className='player-card';
-        const thumbFrame = document.createElement('div'); thumbFrame.style.width='140px'; thumbFrame.style.height='140px'; thumbFrame.style.overflow='hidden'; thumbFrame.style.borderRadius='12px';
-        const thumb = document.createElement('img'); thumb.className='player-thumb'; thumb.src = p.img || PLACEHOLDER_1PX; thumb.style.transform = `translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale})`;
-        if(!p.locked) attachImageDrag(thumb,p);
-        thumbFrame.appendChild(thumb);
-        const info = document.createElement('div'); info.style.flex='1';
-        const name = document.createElement('div'); name.style.fontWeight=800; name.style.fontSize='20px'; name.textContent = (showFlags && p.flag ? (p.flag + ' ') : '') + p.name;
-        const team = document.createElement('div'); team.style.color='var(--muted)'; team.style.marginTop='6px'; team.textContent = p.team;
-        const statRow = document.createElement('div'); statRow.className='stats-grid';
-        ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'].forEach(k=>{
-          const pill = document.createElement('div'); pill.className='stat-pill';
-          const val = p.stat[k] !== undefined ? p.stat[k] : '';
-          pill.innerHTML = `<div style="font-size:12px;color:var(--muted)">${k}</div><div style="font-size:14px">${val}</div>`;
-          statRow.appendChild(pill);
-          if(k==='Runs' && Number(val) >= Number(document.getElementById('runsThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ffd966,#f7c948)';
-          if(k==='Sixes' && Number(val) >= Number(document.getElementById('sixesThreshold').value||0)) pill.style.background='linear-gradient(90deg,#ff9b5c,#ff6b3a)';
-        });
-        info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
-        card.appendChild(thumbFrame); card.appendChild(info);
-        list.appendChild(card);
-      });
-      templateArea.appendChild(list);
-    }
-    saveState();
-  } catch(err){
-    console.error('renderCanvas error', err);
-  }
+/* Build hero stats markup */
+function buildStatPill(k, val){
+  const d = document.createElement('div'); d.className='stat-pill';
+  const kEl = document.createElement('div'); kEl.className='k'; kEl.textContent=k;
+  const vEl = document.createElement('div'); vEl.className='v'; vEl.textContent = val;
+  d.appendChild(kEl); d.appendChild(vEl);
+  return d;
 }
 
-/* attach drag to reposition image inside its frame */
+/* render canvas */
+function renderCanvas(){
+  // theme (simple for now)
+  const bg = document.getElementById('bgSelect')?.value || 'dark';
+  if(bg==='stadium') capture.style.background = 'linear-gradient(180deg,#041022,#06111c)';
+  else if(bg==='fire') capture.style.background = 'linear-gradient(180deg,#200405,#3b0b0b)';
+  else capture.style.background = 'linear-gradient(180deg,#050817,#071122)';
+
+  // headline
+  const hf = document.getElementById('headlineFont')?.value || "'Bebas Neue',sans-serif";
+  const hsize = Number(document.getElementById('headlineFontSize')?.value || 64);
+  const hcolor = document.getElementById('headlineColor')?.value || '#00eaff';
+  document.getElementById('headlinePreview').style.fontFamily = hf;
+  document.getElementById('headlineText').style.color = hcolor;
+  document.getElementById('headlineText').style.fontSize = hsize + 'px';
+
+  // effects overlay
+  const vign = Number(document.getElementById('vignette')?.value || 0.35);
+  const grain = Number(document.getElementById('grain')?.value || 0.08);
+  const overlay = document.getElementById('effectsOverlay');
+  overlay.innerHTML = '';
+  // vignette
+  const v = document.createElement('div');
+  v.style.position='absolute'; v.style.inset='0';
+  v.style.background = `radial-gradient(ellipse at center, rgba(0,0,0,${vign*0.12}) 0%, rgba(0,0,0,${vign}) 80%)`;
+  v.style.pointerEvents='none';
+  overlay.appendChild(v);
+  // grain
+  if(grain>0){
+    const g = document.createElement('div');
+    g.style.position='absolute'; g.style.inset='0';
+    g.style.backgroundImage = `url(${createNoiseDataURL(Math.round(grain*2)||1)})`;
+    g.style.opacity = Math.min(0.6, grain); g.style.pointerEvents='none';
+    overlay.appendChild(g);
+  }
+
+  // layout: hero = first player or placeholder
+  const p = players[0] || { name:'New Player', team:'Team', flag:'', stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0}, img:'', pos:{x:50,y:50,scale:1} };
+  heroImg.src = p.img || PLACEHOLDER_SVG;
+  heroImg.style.transform = `translate(-50%,-50%) translate(${p.pos.x-50}%,${p.pos.y-50}%) scale(${p.pos.scale||1})`;
+  heroName.textContent = (document.getElementById('flagToggle')?.value === 'yes' && p.flag ? p.flag + ' ' : '') + p.name;
+  heroTeam.textContent = p.team;
+  heroStat.textContent = p.stat.Runs || 0;
+
+  // hero stat grid: rebuild
+  heroStats.innerHTML = '';
+  const statList = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
+  const runsT = Number(document.getElementById('runsThreshold')?.value || 0);
+  const sixesT = Number(document.getElementById('sixesThreshold')?.value || 0);
+  statList.forEach(k=>{
+    const val = p.stat[k] !== undefined ? p.stat[k] : '';
+    const pill = buildStatPill(k, val);
+    if(k==='Runs' && Number(val) >= runsT) pill.style.background = 'linear-gradient(90deg,#ffd966,#f7c948)';
+    if(k==='Sixes' && Number(val) >= sixesT) pill.style.background = 'linear-gradient(90deg,#ff9b5c,#ff6b3a)';
+    heroStats.appendChild(pill);
+  });
+
+  // list side - top N players by layout
+  const layout = document.getElementById('layoutSelect')?.value || 'single';
+  let count = 3;
+  if(layout==='dual') count=2; if(layout==='three') count=3; if(layout==='five') count=Math.min(5,players.length||5);
+  const showPlayers = players.slice(0, count);
+
+  playersList.innerHTML = '';
+  showPlayers.forEach((pl, idx) => {
+    const card = document.createElement('div'); card.className='mini-card';
+    const thumbWrap = document.createElement('div'); thumbWrap.className='mini-thumb';
+    const img = document.createElement('img'); img.src = pl.img || PLACEHOLDER_SVG; img.alt = pl.name;
+    img.style.transform = `translate(${pl.pos.x-50}%,${pl.pos.y-50}%) scale(${pl.pos.scale||1})`;
+    thumbWrap.appendChild(img);
+
+    const info = document.createElement('div'); info.style.flex='1';
+    const name = document.createElement('div'); name.style.fontWeight='800'; name.style.fontSize='16px'; name.textContent = (document.getElementById('flagToggle')?.value === 'yes' && pl.flag ? pl.flag + ' ' : '') + pl.name;
+    const team = document.createElement('div'); team.style.color='var(--muted)'; team.style.marginTop='6px'; team.textContent = pl.team;
+    const statRow = document.createElement('div'); statRow.style.display='flex'; statRow.style.gap='8px'; statRow.style.marginTop='8px';
+    ['Runs','Sixes','SR'].forEach(k=>{
+      const s = document.createElement('div'); s.style.fontSize='13px'; s.style.fontWeight=800; s.textContent = (pl.stat[k]!==undefined?pl.stat[k]:'-') + ' ' + k;
+      statRow.appendChild(s);
+    });
+
+    info.appendChild(name); info.appendChild(team); info.appendChild(statRow);
+
+    card.appendChild(thumbWrap); card.appendChild(info);
+    playersList.appendChild(card);
+
+    // clicking mini-card moves that player to top (make hero)
+    card.addEventListener('click', ()=>{ if(idx!==0){ const realIdx = idx; // since we sliced, hero selection uses index in players array
+      // find the clicked player's index in players[] by matching name+team (best-effort)
+      const match = players.findIndex(pp => pp.name === pl.name && pp.team === pl.team);
+      if(match > -1){ const [sel] = players.splice(match,1); players.unshift(sel); renderPlayersControls(); renderCanvas(); saveState(); }
+    }});
+  });
+
+  // save state
+  saveState();
+}
+
+/* attach drag to img for hero and minis */
 function attachImageDrag(imgEl, player){
-  let dragging = false;
-  let startX=0,startY=0, startLeft=player.pos.x, startTop=player.pos.y;
+  let dragging=false, startX=0, startY=0, startLeft=player.pos.x, startTop=player.pos.y;
   imgEl.style.cursor='grab';
-  const onDown = (e) => {
-    if(player.locked) return;
-    dragging = true; imgEl.style.cursor='grabbing';
-    startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    startY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
-    startLeft = player.pos.x; startTop = player.pos.y;
-    e.preventDefault();
-  };
-  const onMove = (e) => {
-    if(!dragging) return;
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
-    const dx = (clientX - startX) / (imgEl.parentElement.clientWidth) * 100;
-    const dy = (clientY - startY) / (imgEl.parentElement.clientHeight) * 100;
-    player.pos.x = clamp(startLeft + dx, -100, 200);
-    player.pos.y = clamp(startTop + dy, -100, 200);
-    imgEl.style.transform = `translate(-50%,-50%) translate(${player.pos.x-50}%,${player.pos.y-50}%) scale(${player.pos.scale})`;
-  };
-  const onUp = () => { if(dragging){ dragging=false; imgEl.style.cursor='grab'; saveState(); } };
+  const onDown = (e)=>{ if(player.locked) return; dragging=true; imgEl.style.cursor='grabbing'; startX = e.clientX || (e.touches && e.touches[0].clientX) || 0; startY = e.clientY || (e.touches && e.touches[0].clientY) || 0; startLeft = player.pos.x; startTop = player.pos.y; e.preventDefault(); };
+  const onMove = (e)=>{ if(!dragging) return; const cx = e.clientX || (e.touches && e.touches[0].clientX) || 0; const cy = e.clientY || (e.touches && e.touches[0].clientY) || 0; const dx = (cx - startX)/(imgEl.parentElement.clientWidth)*100; const dy = (cy - startY)/(imgEl.parentElement.clientHeight)*100; player.pos.x = clamp(startLeft + dx, -100, 200); player.pos.y = clamp(startTop + dy, -100, 200); imgEl.style.transform = `translate(-50%,-50%) translate(${player.pos.x-50}%,${player.pos.y-50}%) scale(${player.pos.scale||1})`; };
+  const onUp = ()=>{ if(dragging){ dragging=false; imgEl.style.cursor='grab'; saveState(); } };
   imgEl.addEventListener('pointerdown', onDown);
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', onUp);
 }
 
-/* players control panel - drag reorder etc */
+/* players control panel (right panel) */
 function renderPlayersControls(){
-  clearEl(playersCtrl);
-  players.forEach((p,idx)=>{
-    const div = document.createElement('div'); div.className='player-ctrl';
-    div.draggable = true;
-    div.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', idx); div.style.opacity=0.5; });
-    div.addEventListener('dragend', ()=>{ div.style.opacity=1; });
-
-    div.addEventListener('drop', e=>{
+  playersCtrl.innerHTML = '';
+  players.forEach((p, idx)=>{
+    const el = document.createElement('div'); el.className='player-ctrl';
+    el.draggable = true;
+    el.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', idx); el.style.opacity = 0.5; });
+    el.addEventListener('dragend', ()=> el.style.opacity = 1);
+    el.addEventListener('dragover', e => e.preventDefault());
+    el.addEventListener('drop', e => {
       e.preventDefault();
       const from = Number(e.dataTransfer.getData('text/plain'));
-      const to = idx;
-      if(!Number.isNaN(from) && from !== to){
+      if(!Number.isNaN(from) && from !== idx){
         const item = players.splice(from,1)[0];
-        players.splice(to,0,item);
-        renderPlayersControls(); renderCanvas();
+        players.splice(idx,0,item);
+        renderPlayersControls(); renderCanvas(); saveState();
       }
     });
-    div.addEventListener('dragover', e=>e.preventDefault());
 
-    const thumb = document.createElement('img'); thumb.src = p.img || PLACEHOLDER_1PX; thumb.alt='thumb';
-    thumb.style.width='68px'; thumb.style.height='68px'; thumb.style.borderRadius='8px'; thumb.style.objectFit='cover';
-    const meta = document.createElement('div'); meta.className='meta';
+    const thumb = document.createElement('img'); thumb.src = p.img || PLACEHOLDER_SVG; thumb.style.width='68px'; thumb.style.height='68px'; thumb.style.borderRadius='8px'; thumb.style.objectFit='cover';
+    const meta = document.createElement('div'); meta.className='meta'; meta.style.flex='1';
 
-    const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.value=p.name;
-    const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value=p.team;
+    const nameInp = document.createElement('input'); nameInp.type='text'; nameInp.value = p.name;
+    const teamInp = document.createElement('input'); teamInp.type='text'; teamInp.value = p.team;
 
     const flagSel = document.createElement('select');
     ['','🇮🇳','🇵🇰','🇦🇺','🇿🇦','🇬🇧','🇳🇿','🇱🇰','🇧🇩','🇺🇸','🇯🇵','🇻🇮'].forEach(f=>{
-      const o=document.createElement('option'); o.value=f; o.innerText=f || '—'; if(p.flag===f) o.selected=true; flagSel.appendChild(o);
+      const o = document.createElement('option'); o.value = f; o.innerText = f || '—'; if(p.flag===f) o.selected=true; flagSel.appendChild(o);
     });
 
     const scaleRow = document.createElement('div'); scaleRow.style.display='flex'; scaleRow.style.gap='6px'; scaleRow.style.marginTop='6px';
-    const scaleLabel = document.createElement('div'); scaleLabel.textContent='Scale'; scaleLabel.style.fontSize='12px'; scaleLabel.style.color='var(--muted)';
-    const scaleInp = document.createElement('input'); scaleInp.type='range'; scaleInp.min=0.5; scaleInp.max=2; scaleInp.step=0.01; scaleInp.value=p.pos.scale || 1;
-    scaleInp.addEventListener('input', ()=>{ p.pos.scale = Number(scaleInp.value); renderCanvas(); });
+    const scaleInp = document.createElement('input'); scaleInp.type='range'; scaleInp.min=0.5; scaleInp.max=2; scaleInp.step=0.01; scaleInp.value = p.pos.scale || 1;
+    scaleInp.addEventListener('input', ()=>{ p.pos.scale = Number(scaleInp.value); renderCanvas(); saveState(); });
 
-    scaleRow.appendChild(scaleLabel); scaleRow.appendChild(scaleInp);
+    const lockBtn = document.createElement('button'); lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; lockBtn.className = 'btn btn-ghost small';
+    lockBtn.addEventListener('click', ()=>{ p.locked = !p.locked; renderPlayersControls(); saveState(); });
 
-    const lockBtn = document.createElement('button'); lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; lockBtn.className='btn-outline small';
-    lockBtn.addEventListener('click', ()=>{ p.locked = !p.locked; lockBtn.textContent = p.locked ? 'Unlock' : 'Lock'; renderPlayersControls(); });
-
-    const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*';
+    const fileInp = document.createElement('input'); fileInp.type='file'; fileInp.accept='image/*'; fileInp.style.marginTop='6px';
     fileInp.addEventListener('change', (e)=>{
       const f = e.target.files?.[0]; if(!f) return;
-      // fast preview using object URL (no base64 conversion), then read as base64 for persistence
-      const url = URL.createObjectURL(f);
-      thumb.src = url;
-      const r = new FileReader(); r.onload = ev => { p.img = ev.target.result; renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
+      const url = URL.createObjectURL(f); thumb.src = url;
+      const reader = new FileReader(); reader.onload = ev => { p.img = ev.target.result; renderPlayersControls(); renderCanvas(); saveState(); }; reader.readAsDataURL(f);
     });
 
-    const dupBtn = document.createElement('button'); dupBtn.textContent='Duplicate'; dupBtn.className='btn-outline small';
-    dupBtn.addEventListener('click', ()=>{ const copy = JSON.parse(JSON.stringify(p)); players.push(copy); renderPlayersControls(); renderCanvas(); saveState(); });
-    const delBtn = document.createElement('button'); delBtn.textContent='Delete'; delBtn.className='btn-outline small';
+    const dupBtn = document.createElement('button'); dupBtn.textContent='Duplicate'; dupBtn.className='btn btn-ghost small';
+    dupBtn.addEventListener('click', ()=>{ players.push(JSON.parse(JSON.stringify(p))); renderPlayersControls(); renderCanvas(); saveState(); });
+    const delBtn = document.createElement('button'); delBtn.textContent='Delete'; delBtn.className='btn btn-ghost small';
     delBtn.addEventListener('click', ()=>{ players.splice(idx,1); renderPlayersControls(); renderCanvas(); saveState(); });
 
     const statKeys = ['Runs','Sixes','SR','Avg','Innings','Matches','Economy'];
-    const statWrap = document.createElement('div'); statWrap.style.display='grid'; statWrap.style.gridTemplateColumns='repeat(4,1fr)'; statWrap.style.gap='6px'; statWrap.style.marginTop='8px';
+    const statWrap = document.createElement('div'); statWrap.style.display='grid'; statWrap.style.gridTemplateColumns='repeat(2,1fr)'; statWrap.style.gap='6px'; statWrap.style.marginTop='8px';
     statKeys.forEach(k=>{
-      const si = document.createElement('input'); si.type='text'; si.placeholder=k; si.value = p.stat[k] !== undefined ? p.stat[k] : '';
+      const si = document.createElement('input'); si.type='text'; si.placeholder = k; si.value = p.stat[k]!==undefined ? p.stat[k] : '';
       si.style.padding='6px'; si.style.borderRadius='6px'; si.style.background='#071826'; si.style.border='none'; si.style.color='#fff';
       si.addEventListener('input', ()=>{ p.stat[k] = si.value; renderCanvas(); saveState(); });
       statWrap.appendChild(si);
@@ -422,17 +490,17 @@ function renderPlayersControls(){
     teamInp.addEventListener('input', ()=>{ p.team = teamInp.value; renderCanvas(); saveState(); });
     flagSel.addEventListener('change', ()=>{ p.flag = flagSel.value; renderCanvas(); saveState(); });
 
-    meta.appendChild(nameInp); meta.appendChild(teamInp); meta.appendChild(flagSel); meta.appendChild(scaleRow); meta.appendChild(statWrap); meta.appendChild(fileInp);
+    meta.appendChild(nameInp); meta.appendChild(teamInp); meta.appendChild(flagSel); meta.appendChild(scaleRow); scaleRow.appendChild(scaleInp); meta.appendChild(statWrap); meta.appendChild(fileInp);
 
-    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column'; actions.style.gap='6px'; actions.style.marginLeft='6px';
+    const actions = document.createElement('div'); actions.style.display='flex'; actions.style.flexDirection='column'; actions.style.gap='8px';
     actions.appendChild(lockBtn); actions.appendChild(dupBtn); actions.appendChild(delBtn);
 
-    div.appendChild(thumb); div.appendChild(meta); div.appendChild(actions);
-    playersCtrl.appendChild(div);
+    el.appendChild(thumb); el.appendChild(meta); el.appendChild(actions);
+    playersCtrl.appendChild(el);
   });
 }
 
-/* utility: noise canvas */
+/* create noise data URL */
 function createNoiseDataURL(detail=1){
   const size = 64 * Math.max(1, detail);
   const c = document.createElement('canvas'); c.width=size; c.height=size;
@@ -440,23 +508,13 @@ function createNoiseDataURL(detail=1){
   const img = ctx.createImageData(size,size);
   for(let i=0;i<img.data.length;i+=4){
     const v = Math.floor(Math.random()*255);
-    img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=Math.floor(10 + Math.random()*30);
+    img.data[i]=v; img.data[i+1]=v; img.data[i+2]=v; img.data[i+3]=Math.floor(12 + Math.random()*40);
   }
   ctx.putImageData(img,0,0);
   return c.toDataURL('image/png');
 }
 
-/* animate number helper */
-function animateNumber(el, target, duration=700){
-  const start = Number(el.textContent.replace(/\D/g,'')) || 0;
-  const diff = target - start;
-  if(diff===0){ el.textContent = target; return; }
-  const frames = Math.max(12, Math.min(60, Math.floor(duration/16)));
-  let f=0;
-  const id = setInterval(()=>{ f++; const v = Math.round(start + diff*(f/frames)); el.textContent = v; if(f>=frames) clearInterval(id); }, Math.max(10, Math.floor(duration/frames)));
-}
-
-/* export */
+/* EXPORT / JSON */
 async function exportImage(){
   const type = document.getElementById('exportType').value;
   const size = document.getElementById('exportSize').value;
@@ -475,20 +533,18 @@ async function exportImage(){
   const dataURL = final.toDataURL(type==='jpg'?'image/jpeg':'image/png', 0.92);
   const a = document.createElement('a'); a.href = dataURL; a.download = `poster_${Date.now()}.${type==='jpg'?'jpg':'png'}`; a.click();
 }
-
-/* Save/load JSON */
 function exportJSON(){
   const data = { players: JSON.parse(JSON.stringify(players)), settings:{
-    bg: document.getElementById('bgSelect').value,
-    layout: document.getElementById('layoutSelect').value,
-    headline: document.getElementById('headlineText').value
+    bg: document.getElementById('bgSelect')?.value,
+    layout: document.getElementById('layoutSelect')?.value,
+    headline: document.getElementById('headlineText')?.value
   }};
   const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='poster_project.json'; a.click();
 }
 function importJSON(file){
   const r = new FileReader();
-  r.onload = e=>{
+  r.onload = e => {
     try{
       const data = JSON.parse(e.target.result);
       if(data.players) players = data.players;
@@ -503,18 +559,18 @@ function importJSON(file){
   r.readAsText(file);
 }
 
-/* drag-drop to add player */
+/* drag/drop add */
 const globalDrop = document.getElementById('globalDrop');
-globalDrop.addEventListener('dragover', e=>{ e.preventDefault(); globalDrop.style.borderColor='var(--accent)'; });
+globalDrop.addEventListener('dragover', e=>{ e.preventDefault(); globalDrop.style.borderColor='var(--accent1)'; });
 globalDrop.addEventListener('dragleave', e=>{ globalDrop.style.borderColor='rgba(255,255,255,0.03)'; });
 globalDrop.addEventListener('drop', e=>{
   e.preventDefault(); globalDrop.style.borderColor='rgba(255,255,255,0.03)';
   const f = e.dataTransfer.files?.[0]; if(!f || !f.type.startsWith('image/')) return;
-  const r = new FileReader(); r.onload = ev => { players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{},img:ev.target.result,pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
+  const r = new FileReader(); r.onload = ev => { players.push({name:'New Player',team:'Team',flag:'',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:ev.target.result,pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); }; r.readAsDataURL(f);
 });
 
-/* UI bindings */
-document.getElementById('addPlayer').addEventListener('click', ()=>{ players.push({name:'New Player',team:'Team',flag:'🇮🇳',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); });
+/* UI wiring */
+document.getElementById('addPlayer').addEventListener('click', ()=>{ players.push({name:'New Player',team:'Team',flag:'',stat:{Runs:0,Sixes:0,SR:0,Avg:0,Innings:0,Matches:0,Economy:0},img:'',pos:{x:50,y:50,scale:1},locked:false}); renderPlayersControls(); renderCanvas(); saveState(); });
 document.getElementById('clearAll').addEventListener('click', ()=>{ if(confirm('Clear all players?')){ players=[]; renderPlayersControls(); renderCanvas(); saveState(); } });
 document.getElementById('resetDemo').addEventListener('click', ()=>{ localStorage.removeItem('ps_players'); location.reload(); });
 document.getElementById('exportBtn').addEventListener('click', exportImage);
@@ -524,17 +580,13 @@ document.getElementById('importJsonBtn').addEventListener('click', ()=> document
 document.getElementById('saveTemplate').addEventListener('click', ()=> {
   const name = prompt('Template name'); if(!name) return;
   const list = JSON.parse(localStorage.getItem('ps_templates')||'[]');
-  list.push({name, players: JSON.parse(JSON.stringify(players)), meta:{bg:document.getElementById('bgSelect').value}});
+  list.push({name, players: JSON.parse(JSON.stringify(players)), meta:{bg:document.getElementById('bgSelect')?.value}});
   localStorage.setItem('ps_templates', JSON.stringify(list)); alert('Saved template: '+name);
 });
-
 document.getElementById('headlineText').addEventListener('input', renderCanvas);
 document.getElementById('headlineFontSize').addEventListener('input', ()=>{ document.getElementById('headlineText').style.fontSize = document.getElementById('headlineFontSize').value + 'px'; renderCanvas(); });
 document.getElementById('headlineColor').addEventListener('input', (e)=>{ document.getElementById('headlineText').style.color = e.target.value; renderCanvas(); });
-
-['bgSelect','layoutSelect','headlineFont','vignette','grain','runsThreshold','sixesThreshold','flagToggle','headlineFontSize','headlineColor','accentColor'].forEach(id=>{
-  const el = document.getElementById(id); if(el) el.addEventListener('change', renderCanvas);
-});
+['bgSelect','layoutSelect','headlineFont','vignette','grain','runsThreshold','sixesThreshold','flagToggle','headlineFontSize','headlineColor'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('change', renderCanvas); });
 ['vignette','grain','runsThreshold','sixesThreshold'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderCanvas); });
 
 document.getElementById('previewFrame').addEventListener('change', (e)=>{
@@ -544,19 +596,14 @@ document.getElementById('previewFrame').addEventListener('change', (e)=>{
   else if(v==='short'){ capture.style.width='1080px'; capture.style.height='1920px'; }
   else { capture.style.width='1080px'; capture.style.height='1350px'; }
 });
-
-/* autosave on unload */
 window.addEventListener('beforeunload', () => saveState());
+document.getElementById('togglePreview').addEventListener('click', ()=> { capture.classList.toggle('show-guides'); });
 
-/* initial render */
+/* initial */
 renderPlayersControls(); renderCanvas();
 
-document.getElementById('togglePreview').addEventListener('click', ()=> {
-  capture.classList.toggle('show-guides');
-});
-
+/* expose debug */
 window.PS = { players, renderCanvas, renderPlayersControls, exportImage, exportJSON, importJSON };
-
 </script>
 </body>
 </html>
